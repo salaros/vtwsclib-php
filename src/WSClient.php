@@ -202,7 +202,7 @@ class WSClient {
      * @param  [[Type]] $password [[Description]]
      * @return boolean  [[Description]]
      */
-    public function loginPassword($username, $password) {
+    public function loginPassword($username, $password, &$accesskey = NULL) {
         // Do the challenge before loggin in
         if($this->_challenge($username) === false)
             return false;
