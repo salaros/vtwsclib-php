@@ -421,7 +421,7 @@ class WSClient {
             'operation'   => 'create',
             'sessionName' => $this->_sessionName,
             'elementType' => $module,
-            'element'     => $this->toJSONString($params)
+            'element'     => json_encode($params)
         ];
 
         return $this->_sendRequest($postdata);
