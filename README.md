@@ -24,3 +24,10 @@ Next, run the Composer command to install the latest stable version of Guzzle:
 After installing, you need to require Composer's autoloader:
 
     require 'vendor/autoload.php';
+
+## How to use
+
+    $client=new WSClient($url);
+    $login=$client->login($user, $accessKey);
+    
+..new usage examples are coming soon..
