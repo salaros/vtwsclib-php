@@ -1,3 +1,5 @@
+[![Dependency Status](https://www.versioneye.com/user/projects/555af8f2634daacd41000171/badge.svg?style=flat)](https://www.versioneye.com/user/projects/555af8f2634daacd41000171)
+
 # vtwsclib-php
 
 Vtiger Web Services PHP Client Library
