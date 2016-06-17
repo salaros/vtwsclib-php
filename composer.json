@@ -1,6 +1,5 @@
 {
     "name":         "salaros/vtwsclib-php",
-    "version":      "0.1",
     "license":      "MIT",
     "description":  "Vtiger Web Services PHP Client Library",
     "homepage":     "https://github.com/salaros/vtwsclib-php",
