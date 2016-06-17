@@ -76,7 +76,7 @@ class WSClient {
     public function __construct($url) {
         $this->_serviceUrl = WSClient_Utils::getServiceURL($url);
         $this->_client = new Client([
-            'base_url' => $this->_serviceUrl
+            'base_uri' => $this->_serviceUrl
         ]);
     }
 
@@ -120,7 +120,7 @@ class WSClient {
                     $response = $this->_client->get($this->_serviceBase, ['query' => $reqdata]);
                     break;
                 case 'POST':
-                    $response = $this->_client->post($this->_serviceBase, ['body' => $reqdata]);
+                    $response = $this->_client->post($this->_serviceBase, ['form_params' => $reqdata]);
                     break;
                 default:
                     $this->_lasterror = new WSClient_Error("Unknown request type {$method}");
@@ -129,6 +129,7 @@ class WSClient {
         }
         catch (RequestException $ex)
         {
+            var_dump($ex);die;
             $this->lastError = new WSClient_Error(
                 $ex->getMessage(),
                 $ex->getCode()
@@ -136,7 +137,9 @@ class WSClient {
             return false;
         }
 
-        $json = $response->json();
+        $jsonRaw = $response->getBody();
+        $json = json_decode($jsonRaw, true);
+
         return ($this->_checkForError($json))
             ? false
             : $json['result'];
@@ -204,8 +207,9 @@ class WSClient {
      */
     public function loginPassword($username, $password, &$accesskey = NULL) {
         // Do the challenge before loggin in
-        if($this->_challenge($username) === false)
+        if($this->_challenge($username) === false) {
             return false;
+        }
 
         $postdata = [
             'operation' => 'login_pwd',
@@ -229,7 +233,7 @@ class WSClient {
      * @return WSClient_Error The error object
      */
     public function getLastError() {
-        return $this->_lasterror;
+        return $this->_lastError;
     }
 
     /**
