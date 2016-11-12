@@ -33,7 +33,6 @@ namespace Salaros\Vtiger\VTWSCLib;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Salaros\Vtiger\VTWSCLib\WSClient_Utils;
 
 /**
  * Vtiger Web Services PHP Client
