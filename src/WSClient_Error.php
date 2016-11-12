@@ -34,22 +34,23 @@ namespace Salaros\Vtiger\VTWSCLib;
 /**
  * Vtiger Web Services PHP Client error class
  *
- * Class WSClient_Error
+ * Class WSClientError
  * @package Salaros\Vtiger\VTWSCLib
  */
-class WSClient_Error {
-
-    protected $_code,
-              $_message;
+class WSClientError
+{
+    protected $errorCode;
+    protected $errorMessage;
 
     /**
      * [[Description]]
-     * @param [[Type]] $_message    [[Description]]
-     * @param [[Type]] [$_code = 0] [[Description]]
+     * @param string $errorMessage    [[Description]]
+     * @param int [$errorCode = 0]    [[Description]]
      */
-    public function __construct($_message, $_code = 0) {
-        $this->_code = $_code;
-        $this->_message = $_message;
+    public function __construct($errorMessage, $errorCode = 0)
+    {
+        $this->errorCode = $errorCode;
+        $this->errorMessage = $errorMessage;
     }
 
     /**
@@ -58,24 +59,22 @@ class WSClient_Error {
      */
     public function __toString()
     {
-        return "WSClient Error [{$this->_code}]: {$this->_message}";
+        return sprintf("WSClient Error [ %s ]: %s", $this->errorCode, $this->errorMessage);
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] [$addErrorProp = true] [[Description]]
-     * @return [[Type]] [[Description]]
+     * @param  bool [$addErrorProp = true] [[Description]]
+     * @return array [[Description]]
      */
-    public function toJson($addErrorProp = true) {
+    public function toJson()
+    {
         $error = [
-            'code' => $_code,
-            'message' => $_message
+            'code' => $this->errorCode,
+            'message' => $this->errorMessage,
+            'error' => true
         ];
 
-        if($addErrorProp)
-            $error = array_merge(['error' => true], $error);
-
-        return json_encode($error);
+        return json_encode($error, true);
     }
-
 }

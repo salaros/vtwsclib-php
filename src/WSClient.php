@@ -41,33 +41,33 @@ use Salaros\Vtiger\VTWSCLib\WSClient_Utils;
  * Class WSClient
  * @package Salaros\Vtiger\VTWSCLib
  */
-class WSClient {
+class WSClient
+{
     // HTTP Client instance
-    protected $_client = false;
+    protected $httpClient = null;
 
     // Service URL to which client connects to
-    protected $_serviceUrl = false;
-    protected $_serviceBase = 'webservice.php';
+    protected $serviceBaseURL = 'webservice.php';
 
     // Webservice login validity
-    private $_serviceServerTime = false;
-    private $_serviceExpireTime = false;
-    private $_serviceToken = false;
+    private $serviceServerTime = false;
+    private $serviceExpireTime = false;
+    private $serviceToken = false;
 
     // Webservice user credentials
-    private $_userName = false;
-    private $_accessKey = false;
+    private $userName = false;
+    private $accessKey = false;
 
     // Webservice login credentials
-    private $_userID = false;
-    private $_sessionName = false;
+    private $userID = false;
+    private $sessionName = false;
 
     // Vtiger CRM and WebServices API version
-    private $_apiVersion = false;
-    private $_vtigerVersion = false;
+    private $apiVersion = false;
+    private $vtigerVersion = false;
 
     // Last operation error information
-    protected $_lastError = false;
+    protected $lastErrorMessage = false;
 
     /**
      * Class constructor
@@ -83,27 +83,26 @@ class WSClient {
         }
 
         // Gets target URL for WebServices API requests
-        $this->_serviceUrl = $url;
-        $this->_client = new Client([
-            'base_uri' => $this->_serviceUrl
+        $this->httpClient = new Client([
+            'base_uri' => $url
         ]);
     }
 
     /**
      * Check if result has any error
-     * @param  [[Type]] $json [[Description]]
+     * @param  array $jsonResult [[Description]]
      * @return boolean  [[Description]]
      */
-    private function _checkForError($json) {
-
-        if(isset($json['success']) && (bool)$json['success'] === true) {
-            $this->_lasterror = false;
+    private function checkForError($jsonResult)
+    {
+        if (isset($jsonResult['success']) && (bool)$jsonResult['success'] === true) {
+            $this->lastErrorMessage = null;
             return false;
         }
 
-        $this->_lasterror = new WSClient_Error(
-            $json['error']['message'],
-            $json['error']['code']
+        $this->lastErrorMessage = new WSClientError(
+            $jsonResult['error']['message'],
+            $jsonResult['error']['code']
         );
 
         return true;
@@ -113,61 +112,68 @@ class WSClient {
      * Checks and performs a login operation if requried
      * @access private
      */
-    private function _checkLogin() {
-        if(time() <= $this->_serviceExpireTime) {
+    private function checkLogin()
+    {
+        if (time() <= $this->serviceExpireTime) {
             return;
         }
-        $this->login($this->_userName, $this->_accessKey);
+        $this->login($this->userName, $this->accessKey);
     }
 
-    private function _sendRequest(array $reqdata, $method = 'POST')
+    /**
+     * [[Description]]
+     * @access private
+     * @param  [[Type]] $username [[Description]]
+     * @param  [[Type]] $accessKey [[Description]]
+     * @return array [[Description]]
+     */
+    private function sendHttpRequest(array $reqdata, $method = 'POST')
     {
-        try
-        {
-            switch($method) {
+        try {
+            switch ($method) {
                 case 'GET':
-                    $response = $this->_client->get($this->_serviceBase, ['query' => $reqdata]);
+                    $response = $this->httpClient->get($this->serviceBaseURL, ['query' => $reqdata]);
                     break;
                 case 'POST':
-                    $response = $this->_client->post($this->_serviceBase, ['form_params' => $reqdata]);
+                    $response = $this->httpClient->post($this->serviceBaseURL, ['form_params' => $reqdata]);
                     break;
                 default:
-                    $this->_lasterror = new WSClient_Error("Unknown request type {$method}");
-                    return false;
+                    $this->lastErrorMessage = new WSClientError("Unknown request type {$method}");
+                    return null;
             }
-        }
-        catch (RequestException $ex)
-        {
-            var_dump($ex);die;
-            $this->lastError = new WSClient_Error(
+        } catch (RequestException $ex) {
+            $this->lastError = new WSClientError(
                 $ex->getMessage(),
                 $ex->getCode()
             );
-            return false;
+            return null;
         }
 
         $jsonRaw = $response->getBody();
-        $json = json_decode($jsonRaw, true);
+        $jsonObj = json_decode($jsonRaw, true);
 
-        return ($this->_checkForError($json))
-            ? false
-            : $json['result'];
+        return ($this->checkForError($jsonObj))
+            ? null
+            : $jsonObj['result'];
     }
 
     /**
      * Performs the challenge
      * @access private
+     * @param  string $username [[Description]]
+     * @return array [[Description]]
      */
-    private function _challenge($username) {
+    private function passChallenge($username)
+    {
         $getdata = [
             'operation' => 'getchallenge',
             'username'  => $username
         ];
-        $result = $this->_sendRequest($getdata, 'GET');
+        $result = $this->sendHttpRequest($getdata, 'GET');
 
-        $this->_serviceServerTime = $result['serverTime'];
-        $this->_serviceExpireTime = $result['expireTime'];
-        $this->_serviceToken = $result['token'];
+        $this->serviceServerTime = $result['serverTime'];
+        $this->serviceExpireTime = $result['expireTime'];
+        $this->serviceToken = $result['token'];
 
         return true;
     }
@@ -178,32 +184,35 @@ class WSClient {
      * @param  [[Type]] $accessKey [[Description]]
      * @return boolean [[Description]]
      */
-    public function login($username, $accessKey) {
+    public function login($username, $accessKey)
+    {
         // Do the challenge before loggin in
-        if($this->_challenge($username) === false)
+        if ($this->passChallenge($username) === false) {
             return false;
+        }
 
         $postdata = [
             'operation' => 'login',
             'username'  => $username,
-            'accessKey' => md5($this->_serviceToken.$accessKey)
+            'accessKey' => md5($this->serviceToken.$accessKey)
         ];
 
-        $result = $this->_sendRequest($postdata);
-        if(!$result || !is_array($result))
+        $result = $this->sendHttpRequest($postdata);
+        if (!$result || !is_array($result)) {
             return false;
+        }
 
         // Backuping logged in user credentials
-        $this->_userName = $username;
-        $this->_accessKey = $accessKey;
+        $this->userName = $username;
+        $this->accessKey = $accessKey;
 
         // Session data
-        $this->_sessionName = $result['sessionName'];
-        $this->_userID = $result['userId'];
+        $this->sessionName = $result['sessionName'];
+        $this->userID = $result['userId'];
 
         // Vtiger CRM and WebServices API version
-        $this->_apiVersion = $result['version'];
-        $this->_vtigerVersion = $result['vtigerVersion'];
+        $this->apiVersion = $result['version'];
+        $this->vtigerVersion = $result['vtigerVersion'];
 
         return true;
     }
@@ -214,9 +223,10 @@ class WSClient {
      * @param  [[Type]] $password [[Description]]
      * @return boolean  [[Description]]
      */
-    public function loginPassword($username, $password, &$accesskey = NULL) {
+    public function loginPassword($username, $password, &$accesskey = null)
+    {
         // Do the challenge before loggin in
-        if($this->_challenge($username) === false) {
+        if ($this->passChallenge($username) === false) {
             return false;
         }
 
@@ -226,9 +236,10 @@ class WSClient {
             'password' => $password
         ];
 
-        $result = $this->_sendRequest($postdata);
-        if(!$result || !is_array($result) || count($result) !== 1)
+        $result = $this->sendHttpRequest($postdata);
+        if (!$result || !is_array($result) || count($result) !== 1) {
             return false;
+        }
 
         $accesskey = array_key_exists('accesskey', $result)
             ? $result['accesskey']
@@ -239,78 +250,86 @@ class WSClient {
 
     /**
      * Gets last operation error, if any
-     * @return WSClient_Error The error object
+     * @return WSClientError The error object
      */
-    public function getLastError() {
-        return $this->_lastError;
+    public function getLastError()
+    {
+        return $this->lastErrorMessage;
     }
 
     /**
      * Returns the client library version.
      * @return string Client library version
      */
-    public function getVersion() {
+    public function getVersion()
+    {
+        global $wsclient_version;
         return $wsclient_version;
     }
 
     /**
      * [[Description]]
-     * @return boolean [[Description]]
+     * @return array [[Description]]
      */
-    public function getTypes() {
+    public function getTypes()
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         $getdata = [
             'operation' => 'listtypes',
-            'sessionName'  => $this->_sessionName
+            'sessionName'  => $this->sessionName
         ];
 
-        $result = $this->_sendRequest($getdata, 'GET');
-        $modules = $result['types'];
+        $result = $this->sendHttpRequest($getdata, 'GET');
+        $moduleNames = $result['types'];
 
         $result = array();
-        foreach($modules as $module) {
-            $result[$module] = ['name' => $module];
+        foreach ($moduleNames as $moduleName) {
+            $result[$moduleName] = ['name' => $moduleName];
         }
         return $result;
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] $module [[Description]]
+     * @param  string $moduleName [[Description]]
      * @return boolean  [[Description]]
      */
-    public function getType($module) {
+    public function getType($moduleName)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         $getdata = [
             'operation' => 'describe',
-            'sessionName'  => $this->_sessionName,
-            'elementType' => $module
+            'sessionName'  => $this->sessionName,
+            'elementType' => $moduleName
         ];
 
-        return $this->_sendRequest($getdata, 'GET');
+        return $this->sendHttpRequest($getdata, 'GET');
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]]       $module [[Description]]
-     * @param  [[Type]]       $id     [[Description]]
+     * @param  [[Type]]       $moduleName [[Description]]
+     * @param  [[Type]]       $entityID     [[Description]]
      * @return boolean|string [[Description]]
      */
-    public function getTypedID($module, $id) {
-        if(stripos($id,'x') !== false)
-            return $id;
+    public function getTypedID($moduleName, $entityID)
+    {
+        if (stripos($entityID, 'x') !== false) {
+            return $entityID;
+        }
 
-        $type = $this->getType($module);
-        if(!$type || !array_key_exists('idPrefix', $type)) {
-            $this->_lasterror = new WSClient_Error("The following module is not installed:".print_r($module, true));
+        $type = $this->getType($moduleName);
+        if (!$type || !array_key_exists('idPrefix', $type)) {
+            $errorMessage = sprintf("The following module is not installed: %s", $moduleName);
+            $this->lastErrorMessage = new WSClientError($errorMessage);
             return false;
         }
 
-        return "{$type['idPrefix']}x{$id}";
+        return "{$type['idPrefix']}x{$entityID}";
     }
 
     /**
@@ -320,20 +339,21 @@ class WSClient {
      * @param  string  [$type   = 'POST'] Request method (POST/GET)
      * @return boolean [[Description]]
      */
-    public function invokeOperation($operation, array $params = null, $method = 'POST') {
+    public function invokeOperation($operation, array $params = null, $method = 'POST')
+    {
         // Perform re-login if required
-        $this->_checkLogin();
+        $this->checkLogin();
 
         $reqdata = [
             'operation' => $operation,
-            'sessionName' => $this->_sessionName
+            'sessionName' => $this->sessionName
         ];
 
-        if(!empty($params) && is_array($params)) {
+        if (!empty($params) && is_array($params)) {
             $reqdata = array_merge($params);
         }
 
-        return $this->_sendRequest($reqdata, $method);
+        return $this->sendHttpRequest($reqdata, $method);
     }
 
     /**
@@ -341,64 +361,68 @@ class WSClient {
      * @param  [[Type]] $query [[Description]]
      * @return boolean  [[Description]]
      */
-    public function query($query) {
+    public function query($query)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         // Make sure the query ends with ;
-        $query = trim($query);
-        if(strripos($query, ';') != strlen($query)-1) $query .= ';';
+        $query = (strripos($query, ';') != strlen($query)-1)
+            ? trim($query .= ';')
+            : trim($query);
 
         $getdata = [
             'operation' => 'query',
-            'sessionName' => $this->_sessionName,
+            'sessionName' => $this->sessionName,
             'query' => $query
         ];
 
-        return $this->_sendRequest($getdata, 'GET');
+        return $this->sendHttpRequest($getdata, 'GET');
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] $id [[Description]]
+     * @param  [[Type]] $entityID [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityRetrieveByID($module, $id) {
+    public function entityRetrieveByID($moduleName, $entityID)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         // Preprend so-called moduleid if needed
-        $id = $this->getTypedID($module, $id);
+        $entityID = $this->getTypedID($moduleName, $entityID);
 
         $getdata = [
             'operation' => 'retrieve',
-            'sessionName' => $this->_sessionName,
-            'id' => $id
+            'sessionName' => $this->sessionName,
+            'id' => $entityID
         ];
 
-        return $this->_sendRequest($getdata, 'GET');
+        return $this->sendHttpRequest($getdata, 'GET');
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] $module  [[Description]]
+     * @param  [[Type]] $moduleName  [[Description]]
      * @param  [[Type]] $params  [[Description]]
-     * @param  [[Type]] $cleanID [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityRetrieveID($module, $params, $cleanID = true) {
+    public function entityRetrieveID($moduleName, $params)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
-        if(empty($params) || !is_array($params)) {
-            $this->_lasterror = new WSClient_Error("You have to specify at least on parameter (prop=>value) in order to retrieve entity ID");
+        if (empty($params) || !is_array($params)) {
+            $errorMessage = "You have to specify at least on parameter (prop => value) in order to retrieve entity ID";
+            $this->lastErrorMessage = new WSClientError($errorMessage);
             return false;
         }
 
         // Build the query
         $criteria = array();
-        $query="SELECT id FROM $module WHERE ";
-        foreach($params as $param=>$value) {
+        $query="SELECT id FROM $moduleName WHERE ";
+        foreach ($params as $param => $value) {
             $criteria[] = "{$param} LIKE '{$value}'";
         }
 
@@ -406,121 +430,128 @@ class WSClient {
         $query.=" LIMIT 1";
 
         $records = $this->query($query);
-        if (!$records || !is_array($records) || (count($records) !== 1))
+        if (!$records || !is_array($records) || (count($records) !== 1)) {
             return false;
+        }
 
-        $id = $records[0]['id'];
-        return ($cleanID)
-            ? WSClient_Utils::getRecordID($id)
-            : $id;
+        $entityID = $records[0]['id'];
+        $entityIDParts = explode('x', $entityID, 2);
+        return (is_array($entityIDParts) && count($entityIDParts) === 2)
+            ? $entityIDParts[1]
+            : -1;
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] $module   [[Description]]
+     * @param  [[Type]] $moduleName   [[Description]]
      * @param  [[Type]] $params [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityCreate($module, $params) {
+    public function entityCreate($moduleName, $params)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         // Assign record to logged in user if not specified
-        if(!isset($params['assigned_user_id'])) {
-            $params['assigned_user_id'] = $this->_userID;
+        if (!isset($params['assigned_user_id'])) {
+            $params['assigned_user_id'] = $this->userID;
         }
 
         $postdata = [
             'operation'   => 'create',
-            'sessionName' => $this->_sessionName,
-            'elementType' => $module,
+            'sessionName' => $this->sessionName,
+            'elementType' => $moduleName,
             'element'     => json_encode($params)
         ];
 
-        return $this->_sendRequest($postdata);
+        return $this->sendHttpRequest($postdata);
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] $module   [[Description]]
+     * @param  [[Type]] $moduleName   [[Description]]
      * @param  [[Type]] $params [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityUpdate($module, $params) {
+    public function entityUpdate($moduleName, $params)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         // Assign record to logged in user if not specified
-        if(!isset($params['assigned_user_id'])) {
-            $params['assigned_user_id'] = $this->_userID;
+        if (!isset($params['assigned_user_id'])) {
+            $params['assigned_user_id'] = $this->userID;
         }
 
-        if(array_key_exists('id', $params)) {
-            $data = $this->entityRetrieveByID($module, $params['id']);
-            if($data !== false && is_array($data)) {
-                $id = $data['id'];
+        if (array_key_exists('id', $params)) {
+            $data = $this->entityRetrieveByID($moduleName, $params['id']);
+            if ($data !== false && is_array($data)) {
+                $entityID = $data['id'];
                 $params = array_merge(
                     $data,      // needed to provide mandatory field values
                     $params,    // updated data override
-                    ['id'=>$id] // fixing id, might be useful when non <moduleid>x<id> one was specified
+                    ['id'=>$entityID] // fixing id, might be useful when non <moduleid>x<id> one was specified
                 );
             }
         }
 
         $postdata = [
                 'operation'   => 'update',
-                'sessionName' => $this->_sessionName,
-                'elementType' => $module,
+                'sessionName' => $this->sessionName,
+                'elementType' => $moduleName,
                 'element'     => json_encode($params)
         ];
 
-        return $this->_sendRequest($postdata);
+        return $this->sendHttpRequest($postdata);
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] $id [[Description]]
+     * @param  [[Type]] $entityID [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityDelete($module, $id) {
+    public function entityDelete($moduleName, $entityID)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
         // Preprend so-called moduleid if needed
-        $id = $this->getTypedID($module, $id);
+        $entityID = $this->getTypedID($moduleName, $entityID);
 
         $postdata = [
             'operation' => 'delete',
-            'sessionName' => $this->_sessionName,
-            'id' => $id
+            'sessionName' => $this->sessionName,
+            'id' => $entityID
         ];
 
-        return $this->_sendRequest($postdata);
+        return $this->sendHttpRequest($postdata);
     }
 
     /**
      * [[Description]]
-     * @param  [[Type]] [$modifiedTime = NULL] [[Description]]
-     * @param  [[Type]] [$module = NULL]       [[Description]]
+     * @param  [[Type]] [$modifiedTime = null] [[Description]]
+     * @param  [[Type]] [$moduleName = null]   [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entitiesSync($modifiedTime = NULL, $module = NULL) {
+    public function entitiesSync($modifiedTime = null, $moduleName = null)
+    {
         // Perform re-login if required.
-        $this->_checkLogin();
+        $this->checkLogin();
 
-        if(empty($modifiedTime)) {
+        if (empty($modifiedTime)) {
             $modifiedTime = strtotime('today midnight');
         }
 
         $reqdata = [
             'operation' => 'sync',
-            'sessionName' => $this->_sessionName,
+            'sessionName' => $this->sessionName,
             'modifiedTime' => $modifiedTime
         ];
 
-        if(!empty($module))
-            $reqdata['elementType'] = $module;
+        if (!empty($moduleName)) {
+            $reqdata['elementType'] = $moduleName;
+        }
 
-        return $this->_sendRequest($reqdata, true);
+        return $this->sendHttpRequest($reqdata, true);
     }
 }
