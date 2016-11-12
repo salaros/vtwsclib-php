@@ -281,10 +281,10 @@ class WSClient
         ];
 
         $result = $this->sendHttpRequest($getdata, 'GET');
-        $moduleNames = $result['types'];
+        $modules = $result['types'];
 
         $result = array();
-        foreach ($moduleNames as $moduleName) {
+        foreach ($modules as $moduleName) {
             $result[$moduleName] = ['name' => $moduleName];
         }
         return $result;
@@ -293,7 +293,7 @@ class WSClient
     /**
      * [[Description]]
      * @param  string $moduleName [[Description]]
-     * @return boolean  [[Description]]
+     * @return array  [[Description]]
      */
     public function getType($moduleName)
     {
