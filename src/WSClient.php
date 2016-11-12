@@ -88,11 +88,12 @@ class WSClient
     }
 
     /**
-     * Check if result has any error
-     * @param  array $jsonResult [[Description]]
-     * @return boolean  [[Description]]
+     * Check if server response contains an error, therefore the requested operation has failed
+     * @access private
+     * @param  array $jsonResult Server response object to check for errors
+     * @return boolean  True if response object contains an error
      */
-    private function checkForError($jsonResult)
+    private function checkForError(array $jsonResult)
     {
         if (isset($jsonResult['success']) && (bool)$jsonResult['success'] === true) {
             $this->lastErrorMessage = null;
@@ -108,7 +109,7 @@ class WSClient
     }
 
     /**
-     * Checks and performs a login operation if requried
+     * Checks and performs a login operation if requried and repeats login if needed
      * @access private
      */
     private function checkLogin()
@@ -120,11 +121,11 @@ class WSClient
     }
 
     /**
-     * [[Description]]
+     * Sends HTTP request to VTiger web service API endpoint
      * @access private
-     * @param  [[Type]] $username [[Description]]
-     * @param  [[Type]] $accessKey [[Description]]
-     * @return array [[Description]]
+     * @param  array $reqdata HTTP request data
+     * @param  string $method HTTP request method (GET, POST etc)
+     * @return array Returns request result object (null in case of failure)
      */
     private function sendHttpRequest(array $reqdata, $method = 'POST')
     {
@@ -151,16 +152,16 @@ class WSClient
         $jsonRaw = $response->getBody();
         $jsonObj = json_decode($jsonRaw, true);
 
-        return ($this->checkForError($jsonObj))
+        return (!is_array($jsonObj) || $this->checkForError($jsonObj))
             ? null
             : $jsonObj['result'];
     }
 
     /**
-     * Performs the challenge
+     * Gets a challenge token from the server and stores for future requests
      * @access private
-     * @param  string $username [[Description]]
-     * @return array [[Description]]
+     * @param  string $username VTiger user name
+     * @return bool Returns false in case of failure
      */
     private function passChallenge($username)
     {
@@ -169,6 +170,10 @@ class WSClient
             'username'  => $username
         ];
         $result = $this->sendHttpRequest($getdata, 'GET');
+        
+        if (!is_array($result) || !isset($result['token'])) {
+            return false;
+        }
 
         $this->serviceServerTime = $result['serverTime'];
         $this->serviceExpireTime = $result['expireTime'];
@@ -178,10 +183,11 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  [[Type]] $username [[Description]]
-     * @param  [[Type]] $accessKey [[Description]]
-     * @return boolean [[Description]]
+     * Login to the server using username and VTiger access key token
+     * @access public
+     * @param  string $username VTiger user name
+     * @param  string $accessKey VTiger access key token (visible on user profile/settings page)
+     * @return boolean Returns true if login operation has been successful
      */
     public function login($username, $accessKey)
     {
@@ -217,12 +223,14 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  [[Type]] $username [[Description]]
-     * @param  [[Type]] $password [[Description]]
-     * @return boolean  [[Description]]
+     * Allows you to login using username and password instead of access key (works on some VTige forks)
+     * @access public
+     * @param  string $username VTiger user name
+     * @param  string $password VTiger password (used to access CRM using the standard login page)
+     * @param  string $accessKey This parameter will be filled with user's VTiger access key
+     * @return boolean  Returns true if login operation has been successful
      */
-    public function loginPassword($username, $password, &$accesskey = null)
+    public function loginPassword($username, $password, &$accessKey = null)
     {
         // Do the challenge before loggin in
         if ($this->passChallenge($username) === false) {
@@ -240,15 +248,16 @@ class WSClient
             return false;
         }
 
-        $accesskey = array_key_exists('accesskey', $result)
+        $accessKey = array_key_exists('accesskey', $result)
             ? $result['accesskey']
             : $result[0];
 
-        return $this->login($username, $accesskey);
+        return $this->login($username, $accessKey);
     }
 
     /**
      * Gets last operation error, if any
+     * @access public
      * @return WSClientError The error object
      */
     public function getLastError()
@@ -258,6 +267,7 @@ class WSClient
 
     /**
      * Returns the client library version.
+     * @access public
      * @return string Client library version
      */
     public function getVersion()
@@ -267,8 +277,9 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @return array [[Description]]
+     * Lists all the Vtiger entity types available through the API
+     * @access public
+     * @return array List of entity types
      */
     public function getTypes()
     {
@@ -291,9 +302,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  string $moduleName [[Description]]
-     * @return array  [[Description]]
+     * Get the type information about a given VTiger entity type.
+     * @access public
+     * @param  string $moduleName Name of the module / entity type
+     * @return array  Result object
      */
     public function getType($moduleName)
     {
@@ -310,12 +322,13 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  [[Type]]       $moduleName [[Description]]
-     * @param  [[Type]]       $entityID     [[Description]]
-     * @return boolean|string [[Description]]
+     * Gets the entity ID prepended with module / entity type ID
+     * @access private
+     * @param  string       $moduleName   Name of the module / entity type
+     * @param  string       $entityID     Numeric entity ID
+     * @return boolean|string Returns false if it is not possible to retrieve module / entity type ID
      */
-    public function getTypedID($moduleName, $entityID)
+    private function getTypedID($moduleName, $entityID)
     {
         if (stripos((string)$entityID, 'x') !== false) {
             return $entityID;
@@ -332,11 +345,12 @@ class WSClient
     }
 
     /**
-     * Invokes custom operation
-     * @param  string  $method  Name of the webservice to invoke
-     * @param  array   [$params = null] Object $type null or parameter values to method
-     * @param  string  [$type   = 'POST'] Request method (POST/GET)
-     * @return boolean [[Description]]
+     * Invokes custom operation (defined in vtiger_ws_operation table)
+     * @access public
+     * @param  string  $operation  Name of the webservice to invoke
+     * @param  array   [$params = null] Parameter values to operation
+     * @param  string  [$method   = 'POST'] HTTP request method (GET, POST etc)
+     * @return array Result object
      */
     public function invokeOperation($operation, array $params = null, $method = 'POST')
     {
@@ -356,9 +370,16 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  [[Type]] $query [[Description]]
-     * @return boolean  [[Description]]
+     * VTiger provides a simple query language for fetching data.
+     * This language is quite similar to select queries in SQL.
+     * There are limitations, the queries work on a single Module,
+     * embedded queries are not supported, and does not support joins.
+     * But this is still a powerful way of getting data from Vtiger.
+     * Query always limits its output to 100 records,
+     * Client application can use limit operator to get different records.
+     * @access public
+     * @param  string $query SQL-like expression
+     * @return array  Query results
      */
     public function query($query)
     {
@@ -380,9 +401,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  [[Type]] $entityID [[Description]]
-     * @return boolean  [[Description]]
+     * Retrieves an entity by ID
+     * @param  string $moduleName The name of the module / entity type
+     * @param  string $entityID The ID of the entity to retrieve
+     * @return boolean  Entity data
      */
     public function entityRetrieveByID($moduleName, $entityID)
     {
@@ -402,10 +424,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  string $moduleName   [[Description]]
-     * @param  array $params [[Description]]
-     * @return boolean  [[Description]]
+     * Uses VTiger queries to retrieve the ID of the given entity using its data
+     * @param  string $moduleName   The name of the module / entity type
+     * @param  array $params Entity data used for the search
+     * @return int  Numeric ID
      */
     public function entityRetrieveID($moduleName, array $params)
     {
@@ -441,10 +463,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  string $moduleName   [[Description]]
-     * @param  array $params [[Description]]
-     * @return boolean  [[Description]]
+     * Creates an entity for the giving module
+     * @param  string $moduleName   Name of the module / entity type for which the entry has to be created
+     * @param  array $params Entity data
+     * @return array  Entity creation results
      */
     public function entityCreate($moduleName, array $params)
     {
@@ -467,10 +489,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  string $moduleName   [[Description]]
-     * @param  array $params [[Description]]
-     * @return boolean  [[Description]]
+     * Updates an entity
+     * @param  string $moduleName   The name of the module / entity type
+     * @param  array $params Entity data
+     * @return array  Entity update result
      */
     public function entityUpdate($moduleName, array $params)
     {
@@ -505,10 +527,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  string $moduleName   [[Description]]
-     * @param  string $entityID [[Description]]
-     * @return boolean  [[Description]]
+     * Provides entity removal functionality
+     * @param  string $moduleName   The name of the module / entity type
+     * @param  string $entityID The ID of the entity to delete
+     * @return array  Removal status object
      */
     public function entityDelete($moduleName, $entityID)
     {
@@ -528,10 +550,10 @@ class WSClient
     }
 
     /**
-     * [[Description]]
-     * @param  [[Type]] [$modifiedTime = null] [[Description]]
-     * @param  [[Type]] [$moduleName = null]   [[Description]]
-     * @return boolean  [[Description]]
+     * Sync will return a sync result object containing details of changes after modifiedTime
+     * @param  int [$modifiedTime = null]    The date of the first change
+     * @param  string [$moduleName = null]   The name of the module / entity type
+     * @return array  Sync result object
      */
     public function entitiesSync($modifiedTime = null, $moduleName = null)
     {
