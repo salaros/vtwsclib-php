@@ -317,7 +317,7 @@ class WSClient
      */
     public function getTypedID($moduleName, $entityID)
     {
-        if (stripos($entityID, 'x') !== false) {
+        if (stripos((string)$entityID, 'x') !== false) {
             return $entityID;
         }
 
