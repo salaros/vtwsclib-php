@@ -123,19 +123,19 @@ class WSClient
     /**
      * Sends HTTP request to VTiger web service API endpoint
      * @access private
-     * @param  array $reqdata HTTP request data
+     * @param  array $requestData HTTP request data
      * @param  string $method HTTP request method (GET, POST etc)
      * @return array Returns request result object (null in case of failure)
      */
-    private function sendHttpRequest(array $reqdata, $method = 'POST')
+    private function sendHttpRequest(array $requestData, $method = 'POST')
     {
         try {
             switch ($method) {
                 case 'GET':
-                    $response = $this->httpClient->get($this->serviceBaseURL, ['query' => $reqdata]);
+                    $response = $this->httpClient->get($this->serviceBaseURL, ['query' => $requestData]);
                     break;
                 case 'POST':
-                    $response = $this->httpClient->post($this->serviceBaseURL, ['form_params' => $reqdata]);
+                    $response = $this->httpClient->post($this->serviceBaseURL, ['form_params' => $requestData]);
                     break;
                 default:
                     $this->lastErrorMessage = new WSClientError("Unknown request type {$method}");
@@ -357,16 +357,16 @@ class WSClient
         // Perform re-login if required
         $this->checkLogin();
 
-        $reqdata = [
+        $requestData = [
             'operation' => $operation,
             'sessionName' => $this->sessionName
         ];
 
         if (!empty($params) && is_array($params)) {
-            $reqdata = array_merge($params);
+            $requestData = array_merge($params);
         }
 
-        return $this->sendHttpRequest($reqdata, $method);
+        return $this->sendHttpRequest($requestData, $method);
     }
 
     /**
@@ -564,16 +564,16 @@ class WSClient
             ? strtotime('today midnight')
             : intval($modifiedTime);
 
-        $reqdata = [
+        $requestData = [
             'operation' => 'sync',
             'sessionName' => $this->sessionName,
             'modifiedTime' => $modifiedTime
         ];
 
         if (!empty($moduleName)) {
-            $reqdata['elementType'] = $moduleName;
+            $requestData['elementType'] = $moduleName;
         }
 
-        return $this->sendHttpRequest($reqdata, true);
+        return $this->sendHttpRequest($requestData, true);
     }
 }
