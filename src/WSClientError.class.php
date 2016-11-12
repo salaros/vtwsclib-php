@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  *
  * @author    Zhmayev Yaroslav <salaros@salaros.com>
- * @copyright 2015 Zhmayev Yaroslav
+ * @copyright 2015-2016 Zhmayev Yaroslav
  * @license   The MIT License (MIT)
  */
 
