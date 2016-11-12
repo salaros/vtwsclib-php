@@ -538,9 +538,9 @@ class WSClient
         // Perform re-login if required.
         $this->checkLogin();
 
-        if (empty($modifiedTime)) {
-            $modifiedTime = strtotime('today midnight');
-        }
+        $modifiedTime = (empty($modifiedTime))
+            ? strtotime('today midnight')
+            : intval($modifiedTime);
 
         $reqdata = [
             'operation' => 'sync',
