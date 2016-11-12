@@ -93,7 +93,7 @@ class WSClient
      * @param  array $jsonResult Server response object to check for errors
      * @return boolean  True if response object contains an error
      */
-    private function checkForError(array $jsonResult)
+    private function checkForError(array $jsonResult) // TODO move checkForError body to sendHttpRequest method's body
     {
         if (isset($jsonResult['success']) && (bool)$jsonResult['success'] === true) {
             $this->lastErrorMessage = null;
@@ -352,7 +352,7 @@ class WSClient
      * @param  string  [$method   = 'POST'] HTTP request method (GET, POST etc)
      * @return array Result object
      */
-    public function invokeOperation($operation, array $params = null, $method = 'POST')
+    public function invokeOperation($operation, array $params = null, $method = 'POST') array $params) // TODO check if params is an assoc array
     {
         // Perform re-login if required
         $this->checkLogin();
@@ -429,7 +429,7 @@ class WSClient
      * @param  array $params Entity data used for the search
      * @return int  Numeric ID
      */
-    public function entityRetrieveID($moduleName, array $params)
+    public function entityRetrieveID($moduleName, array $params) // TODO check if params is an assoc array
     {
         // Perform re-login if required.
         $this->checkLogin();
@@ -468,7 +468,7 @@ class WSClient
      * @param  array $params Entity data
      * @return array  Entity creation results
      */
-    public function entityCreate($moduleName, array $params)
+    public function entityCreate($moduleName, array $params) // TODO check if params is an assoc array
     {
         // Perform re-login if required.
         $this->checkLogin();
@@ -494,7 +494,7 @@ class WSClient
      * @param  array $params Entity data
      * @return array  Entity update result
      */
-    public function entityUpdate($moduleName, array $params)
+    public function entityUpdate($moduleName, array $params) // TODO check if params is an assoc array
     {
         // Perform re-login if required.
         $this->checkLogin();
@@ -504,6 +504,7 @@ class WSClient
             $params['assigned_user_id'] = $this->userID;
         }
 
+        // TODO implement the case when no ID is given
         if (array_key_exists('id', $params)) {
             $data = $this->entityRetrieveByID($moduleName, $params['id']);
             if ($data !== false && is_array($data)) {
