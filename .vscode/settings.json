@@ -1,0 +1,8 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "phpcs.standard": "PSR2",
+    "files.exclude": {
+        "**/*.bak*": true,
+        "**/vendor": true
+    }
+}
