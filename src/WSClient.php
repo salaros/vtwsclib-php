@@ -73,8 +73,17 @@ class WSClient {
      * Class constructor
      * @param string $url The URL of the remote WebServices server
      */
-    public function __construct($url) {
-        $this->_serviceUrl = WSClient_Utils::getServiceURL($url);
+    public function __construct($url)
+    {
+        if (strripos($url, 'http://', -strlen($url)) === false) {
+            $url = 'http://'.$url;
+        }
+        if (strripos($url, '/') != (strlen($url)-1)) {
+            $url .= '/';
+        }
+
+        // Gets target URL for WebServices API requests
+        $this->_serviceUrl = $url;
         $this->_client = new Client([
             'base_uri' => $this->_serviceUrl
         ]);

@@ -49,21 +49,4 @@ class WSClient_Utils {
             ? -1
             : $ex[1];
     }
-
-    /**
-     * Gets target URL for WebServices API requests
-     * @param  string $url [[Description]]
-     * @return string The complete URL of the service
-     */
-    public static function getServiceURL($url) {
-        if(strripos($url, 'http://', -strlen($url)) === FALSE) {
-            $url = 'http://'.$url;
-        }
-
-        if(strripos($url, '/') != (strlen($url)-1)) {
-            $url .= '/';
-        }
-
-        return $url;
-    }
 }
