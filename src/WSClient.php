@@ -403,11 +403,11 @@ class WSClient
 
     /**
      * [[Description]]
-     * @param  [[Type]] $moduleName  [[Description]]
-     * @param  [[Type]] $params  [[Description]]
+     * @param  string $moduleName   [[Description]]
+     * @param  array $params [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityRetrieveID($moduleName, $params)
+    public function entityRetrieveID($moduleName, array $params)
     {
         // Perform re-login if required.
         $this->checkLogin();
@@ -442,11 +442,11 @@ class WSClient
 
     /**
      * [[Description]]
-     * @param  [[Type]] $moduleName   [[Description]]
-     * @param  [[Type]] $params [[Description]]
+     * @param  string $moduleName   [[Description]]
+     * @param  array $params [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityCreate($moduleName, $params)
+    public function entityCreate($moduleName, array $params)
     {
         // Perform re-login if required.
         $this->checkLogin();
@@ -468,11 +468,11 @@ class WSClient
 
     /**
      * [[Description]]
-     * @param  [[Type]] $moduleName   [[Description]]
-     * @param  [[Type]] $params [[Description]]
+     * @param  string $moduleName   [[Description]]
+     * @param  array $params [[Description]]
      * @return boolean  [[Description]]
      */
-    public function entityUpdate($moduleName, $params)
+    public function entityUpdate($moduleName, array $params)
     {
         // Perform re-login if required.
         $this->checkLogin();
@@ -506,7 +506,8 @@ class WSClient
 
     /**
      * [[Description]]
-     * @param  [[Type]] $entityID [[Description]]
+     * @param  string $moduleName   [[Description]]
+     * @param  string $entityID [[Description]]
      * @return boolean  [[Description]]
      */
     public function entityDelete($moduleName, $entityID)
