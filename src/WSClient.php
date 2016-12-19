@@ -352,7 +352,7 @@ class WSClient
      * @param  string  [$method   = 'POST'] HTTP request method (GET, POST etc)
      * @return array Result object
      */
-    public function invokeOperation($operation, array $params = null, $method = 'POST') array $params) // TODO check if params is an assoc array
+    public function invokeOperation($operation, array $params = null, $method = 'POST') // TODO check if params is an assoc array
     {
         // Perform re-login if required
         $this->checkLogin();
