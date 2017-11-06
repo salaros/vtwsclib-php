@@ -43,9 +43,9 @@ class WSClientError
     protected $errorMessage;
 
     /**
-     * [[Description]]
-     * @param string $errorMessage    [[Description]]
-     * @param int [$errorCode = 0]    [[Description]]
+     * WSClientError constructor
+     * @param string $errorMessage    The error message
+     * @param int [$errorCode = 0]    The error code
      */
     public function __construct($errorMessage, $errorCode = 0)
     {
@@ -54,8 +54,9 @@ class WSClientError
     }
 
     /**
-     * [[Description]]
-     * @return string [[Description]]
+     * Allows WSClientError class to override the default behavior
+     * when its instances are treated as strings
+     * @return string Returns the error message with error code
      */
     public function __toString()
     {
@@ -63,9 +64,8 @@ class WSClientError
     }
 
     /**
-     * [[Description]]
-     * @param  bool [$addErrorProp = true] [[Description]]
-     * @return array [[Description]]
+     * Returns JSON representation of WSClientError class instance
+     * @return string JSON representation of WSClientError class instance
      */
     public function toJson()
     {
