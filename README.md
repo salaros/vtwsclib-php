@@ -1,9 +1,12 @@
-[![Latest Stable Version](https://poser.pugx.org/salaros/vtwsclib-php/v/stable)](https://packagist.org/packages/salaros/vtwsclib-php)
-[![Dependency Status](https://www.versioneye.com/user/projects/555af8f2634daacd41000171/badge.svg?style=flat)](https://www.versioneye.com/user/projects/555af8f2634daacd41000171)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/f5764af3-0382-444c-ada6-3c2b0f8bf39b/mini.png)](https://insight.sensiolabs.com/projects/f5764af3-0382-444c-ada6-3c2b0f8bf39b)
-[![composer.lock](https://poser.pugx.org/salaros/vtwsclib-php/composerlock)](https://packagist.org/packages/salaros/vtwsclib-php)
+[![License](https://img.shields.io/packagist/l/salaros/vtwsclib-php.svg)]()
+[![Packagist](https://img.shields.io/packagist/v/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
+[![Packagist](https://img.shields.io/packagist/dt/salaros/vtwsclib-php.svg)]()
+[![Libraries.io for GitHub](https://img.shields.io/librariesio/github/phoenixframework/phoenix.svg)]()
+[![SensioLabs Insight](https://img.shields.io/sensiolabs/i/f5764af3-0382-444c-ada6-3c2b0f8bf39b.svg)](https://insight.sensiolabs.com/projects/f5764af3-0382-444c-ada6-3c2b0f8bf39b)
+[![composer.lock](https://poser.pugx.org/salaros/vtwsclib-php/composerlock?format=flat)](https://packagist.org/packages/salaros/vtwsclib-php)
 
-# vtwsclib-php
+vtwsclib-php
+============
 
 Vtiger Web Services PHP Client Library
 
