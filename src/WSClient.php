@@ -66,7 +66,7 @@ class WSClient
     private $vtigerVersion = false;
 
     // Last operation error information
-    protected $lastErrorMessage = false;
+    protected $lastErrorMessage = null;
 
     /**
      * Class constructor
