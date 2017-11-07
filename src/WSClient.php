@@ -352,8 +352,14 @@ class WSClient
      * @param  string  [$method   = 'POST'] HTTP request method (GET, POST etc)
      * @return array Result object
      */
-    public function invokeOperation($operation, array $params = null, $method = 'POST') // TODO check if params is an assoc array
+    public function invokeOperation($operation, array $params = null, $method = 'POST')
     {
+        if (!empty($params) || !is_array($params) || !$this->isAssocArray($params)) {
+            $errorMessage = "You have to specified a list of operation parameters, but apparently it's not an associative array ('prop' => value), you must fix it!";
+            $this->lastErrorMessage = new WSClientError($errorMessage);
+            return false;
+        }
+
         // Perform re-login if required
         $this->checkLogin();
 
