@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Vtiger Web Services PHP Client Library
  *
@@ -93,7 +94,7 @@ class WSClient
      * @param  array $jsonResult Server response object to check for errors
      * @return boolean  True if response object contains an error
      */
-    private function checkForError(array $jsonResult) // TODO move checkForError body to sendHttpRequest method's body
+    private function checkForError(array $jsonResult)
     {
         if (isset($jsonResult['success']) && (bool)$jsonResult['success'] === true) {
             $this->lastErrorMessage = null;
@@ -161,7 +162,7 @@ class WSClient
      * Gets a challenge token from the server and stores for future requests
      * @access private
      * @param  string $username VTiger user name
-     * @return bool Returns false in case of failure
+     * @return booleanReturns false in case of failure
      */
     private function passChallenge($username)
     {
@@ -355,8 +356,10 @@ class WSClient
     public function invokeOperation($operation, array $params = null, $method = 'POST')
     {
         if (!empty($params) || !is_array($params) || !$this->isAssocArray($params)) {
-            $errorMessage = "You have to specified a list of operation parameters, but apparently it's not an associative array ('prop' => value), you must fix it!";
-            $this->lastErrorMessage = new WSClientError($errorMessage);
+            $this->lastErrorMessage = new WSClientError(
+                "You have to specified a list of operation parameters, 
+                but apparently it's not an associative array ('prop' => value), you must fix it!"
+            );
             return false;
         }
 
@@ -451,7 +454,7 @@ class WSClient
      * @param  array   $params  Data used to find a matching entry
      * @return int  Numeric ID
      */
-    public function entityRetrieveID($moduleName, array $params) // TODO check if params is an assoc array
+    public function entityRetrieveID($moduleName, array $params)
     {
         $record = $this->entityRetrieve($moduleName, $params, ['id']);
         if (false === $record || !isset($record['id'])) {
@@ -471,8 +474,12 @@ class WSClient
      * @param  array $params Entity data
      * @return array  Entity creation results
      */
-    public function entityCreate($moduleName, array $params) // TODO check if params is an assoc array
+    public function entityCreate($moduleName, array $params)
     {
+        if (!$this->checkParams($params, 'be able to create an entity')) {
+            return false;
+        }
+
         // Perform re-login if required.
         $this->checkLogin();
 
@@ -497,8 +504,12 @@ class WSClient
      * @param  array $params Entity data
      * @return array  Entity update result
      */
-    public function entityUpdate($moduleName, array $params) // TODO check if params is an assoc array
+    public function entityUpdate($moduleName, array $params)
     {
+        if (!$this->checkParams($params, 'be able to update the entity(ies)')) {
+            return false;
+        }
+
         // Perform re-login if required.
         $this->checkLogin();
 
@@ -556,16 +567,14 @@ class WSClient
     /**
      * Retrieves multiple records using module name and a set of constraints
      * @param  string   $moduleName  The name of the module / entity type
-     * @param  array    $params  Data used to find the matching entries
+     * @param  array    $params  Data used to find matching entries
      * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return int      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
-     * @return bool|array  The array containing the matching entries or false if nothing was found
+     * @return bool|array  The array containing matching entries or false if nothing was found
      */
     public function entitiesRetrieve($moduleName, array $params, array $select = [], $limit = 0)
     {
-        if (empty($params) || !is_array($params) || !$this->isAssocArray($params)) {
-            $errorMessage = "You have to specify at least one search parameter (prop => value) in order to filter entities";
-            $this->lastErrorMessage = new WSClientError($errorMessage);
+        if (!$this->checkParams($params, 'be able to retrieve entity(ies)')) {
             return false;
         }
 
@@ -615,7 +624,7 @@ class WSClient
     /**
      * Builds the query using the supplied parameters
      * @param  string   $moduleName  The name of the module / entity type
-     * @param  array    $params  Data used to find the matching entries
+     * @param  array    $params  Data used to find matching entries
      * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return int      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
      * @return string   The query build out of the supplied parameters
@@ -637,9 +646,26 @@ class WSClient
     }
 
     /**
+     * Checks if if params holds valid entity data/search constraints, otherwise returns false
+     * @param  array    $params  Array holding entity data/search constraints
+     * @return boolean  Returns true if params holds valid entity data/search constraints, otherwise returns false
+     */
+    private function checkParams(array $params, $paramsPurpose)
+    {
+        if (empty($params) || !is_array($params) || !$this->isAssocArray($params)) {
+            $this->lastErrorMessage = new WSClientError(sprintf(
+                "You have to specify at least one search parameter (prop => value) in order to %s",
+                $paramsPurpose
+            ));
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * A helper method, used to check in an array is associative or not
      * @param  string  Array to test
-     * @return bool  Returns true in a given array is associative and false if it's not
+     * @return boolean Returns true in a given array is associative and false if it's not
      */
     private function isAssocArray(array $array)
     {
