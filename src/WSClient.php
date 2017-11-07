@@ -335,6 +335,10 @@ class WSClient
             return $entityID;
         }
 
+        if (empty($entityID) || intval($entityID) < 1) {
+            throw new \Exception('Entity ID must be a valid number');
+        }
+
         $type = $this->getType($moduleName);
         if (!$type || !array_key_exists('idPrefix', $type)) {
             $errorMessage = sprintf("The following module is not installed: %s", $moduleName);
@@ -449,19 +453,34 @@ class WSClient
     }
 
     /**
-     * Uses VTiger queries to retrieve the ID of the entity matching a list of constraints
+     * Retrieves the ID of the entity matching a list of constraints + prepends '<module_id>x' string to it
+     * @param  string $moduleName   The name of the module / entity type
+     * @param  array   $params  Data used to find a matching entry
+     * @return int  Type ID (a numeric ID + '<module_id>x')
+     */
+    public function entityRetrieveTypeID($moduleName, array $params)
+    {
+        $records = $this->entitiesRetrieve($moduleName, $params, ['id'], 1);
+        if (false === $records || !isset($records[0]['id']) || empty($records[0]['id'])) {
+            return false;
+        }
+
+        $entityID = $records[0]['id'];
+        $entityIDParts = explode('x', $entityID, 2);
+        return (is_array($entityIDParts) && count($entityIDParts) === 2)
+            ? $entityIDParts[1]
+            : -1;
+    }
+
+    /**
+     * Retrieve a numeric ID of the entity matching a list of constraints
      * @param  string $moduleName   The name of the module / entity type
      * @param  array   $params  Data used to find a matching entry
      * @return int  Numeric ID
      */
     public function entityRetrieveID($moduleName, array $params)
     {
-        $record = $this->entityRetrieve($moduleName, $params, ['id']);
-        if (false === $record || !isset($record['id'])) {
-            return false;
-        }
-
-        $entityID = $record['id'];
+        $entityID = $this->entityRetrieveTypeID($moduleName, $params);
         $entityIDParts = explode('x', $entityID, 2);
         return (is_array($entityIDParts) && count($entityIDParts) === 2)
             ? $entityIDParts[1]
@@ -510,32 +529,39 @@ class WSClient
             return false;
         }
 
+        // Fail if no ID was supplied
+        if (!array_key_exists('id', $params) || empty($params['id'])) {
+            $this->lastErrorMessage = new WSClientError(
+                "The list of contraints must contain a valid ID"
+            );
+            return false;
+        }
+
         // Perform re-login if required.
         $this->checkLogin();
 
-        // Assign record to logged in user if not specified
-        if (!isset($params['assigned_user_id'])) {
-            $params['assigned_user_id'] = $this->userID;
+        // Preprend so-called moduleid if needed
+        $params['id'] = $this->getTypedID($moduleName, $params['id']);
+
+        // Check if the entity exists + retrieve its data so it can be used below
+        $entityData = $this->entityRetrieve($moduleName, [ 'id' => $params['id'] ]);
+        if ($entityData === false && !is_array($entityData)) {
+            $this->lastErrorMessage = new WSClientError("Such entity doesn't exist, so it cannot be updated");
+            return false;
         }
 
-        // TODO implement the case when no ID is given
-        if (array_key_exists('id', $params)) {
-            $data = $this->entityRetrieveByID($moduleName, $params['id']);
-            if ($data !== false && is_array($data)) {
-                $entityID = $data['id'];
-                $params = array_merge(
-                    $data,      // needed to provide mandatory field values
-                    $params,    // updated data override
-                    ['id'=>$entityID] // fixing id, might be useful when non <moduleid>x<id> one was specified
-                );
-            }
-        }
+        // The new data overrides the existing one needed to provide
+        // mandatory field values to WS 'update' operation
+        $params = array_merge(
+            $entityData,
+            $params
+        );
 
         $postdata = [
-                'operation'   => 'update',
-                'sessionName' => $this->sessionName,
-                'elementType' => $moduleName,
-                'element'     => json_encode($params)
+            'operation'   => 'update',
+            'sessionName' => $this->sessionName,
+            'elementType' => $moduleName,
+            'element'     => json_encode($params)
         ];
 
         return $this->sendHttpRequest($postdata);
