@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/packagist/l/salaros/vtwsclib-php.svg)](https://raw.githubusercontent.com/salaros/vtwsclib-php/master/LICENSE)
 [![vTiger versions](https://img.shields.io/badge/vTiger-5,%206,%207.x-green.svg)]()
-[![Packagist version](https://img.shields.io/packagist/v/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
+[![Packagist version]( 	https://img.shields.io/github/tag/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 [![Packagist downloads](https://img.shields.io/packagist/dt/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/salaros/vtwsclib-php.svg)](https://libraries.io/github/salaros/vtwsclib-php)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/?branch=master)
