@@ -557,28 +557,19 @@ class WSClient
      */
     public function entitiesRetrieve($moduleName, array $params, array $select = [], $limit = 0)
     {
-        // Perform re-login if required.
-        $this->checkLogin();
-
         if (empty($params) || !is_array($params) || !$this->isAssocArray($params)) {
-            $errorMessage = "You have to specify at least on parameter (prop => value) in order to retrieve entity ID";
+            $errorMessage = "You have to specify at least one search parameter (prop => value) in order to filter entities";
             $this->lastErrorMessage = new WSClientError($errorMessage);
             return false;
         }
 
-        // Build the query
-        $criteria = array();
-        $select=(empty($select)) ? '*' : implode(',', $select);
-        $query=sprintf("SELECT %s FROM $moduleName WHERE ", $select);
-        foreach ($params as $param => $value) {
-            $criteria[] = "{$param} LIKE '{$value}'";
-        }
+        // Perform re-login if required.
+        $this->checkLogin();
 
-        $query.=implode(" AND ", $criteria);
-        if (intval($limit) > 0) {
-            $query.=sprintf(" LIMIT %s", intval($limit));
-        }
+        // Builds the query
+        $query = $this->buildQuery($moduleName, $params, $select, $limit);
 
+        // Run the query
         $records = $this->query($query);
         if (false === $records || !is_array($records) || (count($records) <= 0)) {
             return false;
@@ -613,6 +604,30 @@ class WSClient
         }
 
         return $this->sendHttpRequest($requestData, true);
+    }
+
+    /**
+     * Builds the query using the supplied parameters
+     * @param  string   $moduleName  The name of the module / entity type
+     * @param  array    $params  Data used to find the matching entries
+     * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
+     * @return int      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return string   The query build out of the supplied parameters
+     */
+    private function buildQuery($moduleName, array $params, array $select = [], $limit = 0)
+    {
+        $criteria = array();
+        $select=(empty($select)) ? '*' : implode(',', $select);
+        $query=sprintf("SELECT %s FROM $moduleName WHERE ", $select);
+        foreach ($params as $param => $value) {
+            $criteria[] = "{$param} LIKE '{$value}'";
+        }
+
+        $query.=implode(" AND ", $criteria);
+        if (intval($limit) > 0) {
+            $query.=sprintf(" LIMIT %s", intval($limit));
+        }
+        return $query;
     }
 
     /**
