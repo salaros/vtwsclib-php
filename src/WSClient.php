@@ -464,12 +464,7 @@ class WSClient
         if (false === $records || !isset($records[0]['id']) || empty($records[0]['id'])) {
             return false;
         }
-
-        $entityID = $records[0]['id'];
-        $entityIDParts = explode('x', $entityID, 2);
-        return (is_array($entityIDParts) && count($entityIDParts) === 2)
-            ? $entityIDParts[1]
-            : -1;
+        return $records[0]['id'];
     }
 
     /**
