@@ -424,38 +424,35 @@ class WSClient
     }
 
     /**
-     * Uses VTiger queries to retrieve the ID of the given entity using its data
+     * Uses VTiger queries to retrieve the entity matching a list of constraints
+     * @param  string  $moduleName   The name of the module / entity type
+     * @param  array   $params  Data used to find a matching entry
+     * @return array   $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
+     * @return int  The matching record
+     */
+    public function entityRetrieve($moduleName, array $params, array $select = [])
+    {
+        $records = $this->entitiesRetrieve($moduleName, $params, $select, 1);
+        if (false === $records || !isset($records[0])) {
+            return false;
+        }
+        return $records[0];
+    }
+
+    /**
+     * Uses VTiger queries to retrieve the ID of the entity matching a list of constraints
      * @param  string $moduleName   The name of the module / entity type
-     * @param  array $params Entity data used for the search
+     * @param  array   $params  Data used to find a matching entry
      * @return int  Numeric ID
      */
     public function entityRetrieveID($moduleName, array $params) // TODO check if params is an assoc array
     {
-        // Perform re-login if required.
-        $this->checkLogin();
-
-        if (empty($params) || !is_array($params)) {
-            $errorMessage = "You have to specify at least on parameter (prop => value) in order to retrieve entity ID";
-            $this->lastErrorMessage = new WSClientError($errorMessage);
+        $record = $this->entityRetrieve($moduleName, $params, ['id']);
+        if (false === $record || !isset($record['id'])) {
             return false;
         }
 
-        // Build the query
-        $criteria = array();
-        $query="SELECT id FROM $moduleName WHERE ";
-        foreach ($params as $param => $value) {
-            $criteria[] = "{$param} LIKE '{$value}'";
-        }
-
-        $query.=implode(" AND ", $criteria);
-        $query.=" LIMIT 1";
-
-        $records = $this->query($query);
-        if (!$records || !is_array($records) || (count($records) !== 1)) {
-            return false;
-        }
-
-        $entityID = $records[0]['id'];
+        $entityID = $record['id'];
         $entityIDParts = explode('x', $entityID, 2);
         return (is_array($entityIDParts) && count($entityIDParts) === 2)
             ? $entityIDParts[1]
