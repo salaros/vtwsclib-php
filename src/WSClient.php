@@ -551,6 +551,46 @@ class WSClient
     }
 
     /**
+     * Retrieves multiple records using module name and a set of constraints
+     * @param  string   $moduleName  The name of the module / entity type
+     * @param  array    $params  Data used to find the matching entries
+     * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
+     * @return int      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return bool|array  The array containing the matching entries or false if nothing was found
+     */
+    public function entitiesRetrieve($moduleName, array $params, array $select = [], $limit = 0)
+    {
+        // Perform re-login if required.
+        $this->checkLogin();
+
+        if (empty($params) || !is_array($params) || !$this->isAssocArray($params)) {
+            $errorMessage = "You have to specify at least on parameter (prop => value) in order to retrieve entity ID";
+            $this->lastErrorMessage = new WSClientError($errorMessage);
+            return false;
+        }
+
+        // Build the query
+        $criteria = array();
+        $select=(empty($select)) ? '*' : implode(',', $select);
+        $query=sprintf("SELECT %s FROM $moduleName WHERE ", $select);
+        foreach ($params as $param => $value) {
+            $criteria[] = "{$param} LIKE '{$value}'";
+        }
+
+        $query.=implode(" AND ", $criteria);
+        if (intval($limit) > 0) {
+            $query.=sprintf(" LIMIT %s", intval($limit));
+        }
+
+        $records = $this->query($query);
+        if (false === $records || !is_array($records) || (count($records) <= 0)) {
+            return false;
+        }
+
+        return $records;
+    }
+
+    /**
      * Sync will return a sync result object containing details of changes after modifiedTime
      * @param  int [$modifiedTime = null]    The date of the first change
      * @param  string [$moduleName = null]   The name of the module / entity type
@@ -576,5 +616,20 @@ class WSClient
         }
 
         return $this->sendHttpRequest($requestData, true);
+    }
+
+    /**
+     * A helper method, used to check in an array is associative or not
+     * @param  string  Array to test
+     * @return bool  Returns true in a given array is associative and false if it's not
+     */
+    private function isAssocArray(array $array)
+    {
+        foreach (array_keys($array) as $key) {
+            if (!is_int($key)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
