@@ -240,13 +240,13 @@ class Entities
     }
 
         /**
-     * Checks if if params holds valid entity data/search constraints, otherwise returns false
-     * @access public
-     * @static
-     * @param  array    $params  Array holding entity data/search constraints
-     * @param string $paramsPurpose
-     * @return boolean  Returns true if params holds valid entity data/search constraints, otherwise returns false
-     */
+         * Checks if if params holds valid entity data/search constraints, otherwise returns false
+         * @access public
+         * @static
+         * @param  array    $params  Array holding entity data/search constraints
+         * @param string $paramsPurpose
+         * @return boolean  Returns true if params holds valid entity data/search constraints, otherwise returns false
+         */
     private static function checkParams(array $params, $paramsPurpose)
     {
         if (empty($params) || !is_array($params) || !is_assoc_array($params)) {

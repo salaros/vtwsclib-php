@@ -267,7 +267,7 @@ class Session
      * @static
      * @param  string  Base URL of vTiger CRM
      * @param string $baseUrl
-     * @return boolean Returns cleaned and fixed vTiger URL
+     * @return string Returns cleaned and fixed vTiger URL
      */
     private static function fixVtigerBaseUrl($baseUrl)
     {
