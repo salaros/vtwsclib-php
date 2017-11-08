@@ -65,15 +65,15 @@ class WSException extends Exception implements IteratorAggregate
      */
     public function __toString()
     {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+        return __CLASS__.": [{$this->code}]: {$this->message}\n";
     }
     
     /**
-    * Retrieve an external iterator
-    * @access public
-    * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-    * @return \Traversable An instance of an object implementing \Traversable
-    */
+     * Retrieve an external iterator
+     * @access public
+     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @return \Traversable An instance of an object implementing \Traversable
+     */
     public function getIterator()
     {
         $properties = $this->getAllProperties();
@@ -83,10 +83,10 @@ class WSException extends Exception implements IteratorAggregate
     }
     
     /**
-    * Gets all the properties of the object
-    * @access public
-    * @return array Array of properties
-    */
+     * Gets all the properties of the object
+     * @access public
+     * @return array Array of properties
+     */
     private function getAllProperties()
     {
         $allProperties = get_object_vars($this);
@@ -95,7 +95,7 @@ class WSException extends Exception implements IteratorAggregate
             $fullNameComponents = explode("\0", $fullName);
             $propertyName = array_pop($fullNameComponents);
             if ($propertyName && isset($value)) {
-                $properties[$propertyName] = $value;
+                $properties[ $propertyName ] = $value;
             }
         }
         

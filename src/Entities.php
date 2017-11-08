@@ -32,7 +32,6 @@
 namespace Salaros\Vtiger\VTWSCLib;
 
 use Salaros\Vtiger\VTWSCLib\WSClient;
-use Salaros\Vtiger\VTWSCLib\EntityUtils;
 
 /**
 * Vtiger Web Services PHP Client Session class
@@ -60,7 +59,7 @@ class Entities
      * @return array   $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return boolean  Entity data
      */
-    public function findOneByID($moduleName, $entityID, array $select = [])
+    public function findOneByID($moduleName, $entityID, array $select = [ ])
     {
         return $this->findOne($moduleName, [ 'id' => $entityID ], $select);
     }
@@ -72,13 +71,13 @@ class Entities
      * @return array   $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return integer  The matching record
      */
-    public function findOne($moduleName, array $params, array $select = [])
+    public function findOne($moduleName, array $params, array $select = [ ])
     {
         $records = $this->findMany($moduleName, $params, $select, 1);
-        if (false === $records || !isset($records[0])) {
+        if (false === $records || !isset($records[ 0 ])) {
             return false;
         }
-        return $records[0];
+        return $records[ 0 ];
     }
 
     /**
@@ -89,11 +88,11 @@ class Entities
      */
     public function getID($moduleName, array $params)
     {
-        $record = $this->findOne($moduleName, $params, ['id']);
-        if (false === $record || !isset($record['id']) || empty($record['id'])) {
+        $record = $this->findOne($moduleName, $params, [ 'id' ]);
+        if (false === $record || !isset($record[ 'id' ]) || empty($record[ 'id' ])) {
             return false;
         }
-        return $record['id'];
+        return $record[ 'id' ];
     }
 
     /**
@@ -107,7 +106,7 @@ class Entities
         $entityID = $this->getID($moduleName, $params);
         $entityIDParts = explode('x', $entityID, 2);
         return (is_array($entityIDParts) && count($entityIDParts) === 2)
-            ? intval($entityIDParts[1])
+            ? intval($entityIDParts[ 1 ])
             : -1;
     }
 
@@ -124,9 +123,9 @@ class Entities
         }
 
         // Assign record to logged in user if not specified
-        if (!isset($params['assigned_user_id'])) {
+        if (!isset($params[ 'assigned_user_id' ])) {
             $currentUser = $this->wsClient->getCurrentUser();
-            $params['assigned_user_id'] = $currentUser['id'];
+            $params[ 'assigned_user_id' ] = $currentUser[ 'id' ];
         }
 
         $requestData = [
@@ -199,7 +198,7 @@ class Entities
      * @return integer      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
      * @return bool|array  The array containing matching entries or false if nothing was found
      */
-    public function findMany($moduleName, array $params, array $select = [], $limit = 0)
+    public function findMany($moduleName, array $params, array $select = [ ], $limit = 0)
     {
         if (!self::checkParams($params, 'be able to retrieve entity(ies)')) {
             return false;
@@ -234,7 +233,7 @@ class Entities
         ];
 
         if (!empty($moduleName)) {
-            $requestData['elementType'] = $moduleName;
+            $requestData[ 'elementType' ] = $moduleName;
         }
 
         return $this->wsClient->invokeOperation('sync', $requestData, true);
@@ -245,6 +244,7 @@ class Entities
      * @access public
      * @static
      * @param  array    $params  Array holding entity data/search constraints
+     * @param string $paramsPurpose
      * @return boolean  Returns true if params holds valid entity data/search constraints, otherwise returns false
      */
     private static function checkParams(array $params, $paramsPurpose)
@@ -264,22 +264,22 @@ class Entities
      * @static
      * @param  string   $moduleName  The name of the module / entity type
      * @param  array    $params  Data used to find matching entries
-     * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
-     * @return int      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return string    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
+     * @return string      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
      * @return string   The query build out of the supplied parameters
      */
-    public static function getQueryString($moduleName, array $params, array $select = [], $limit = 0)
+    public static function getQueryString($moduleName, array $params, array $select = [ ], $limit = 0)
     {
         $criteria = array();
-        $select=(empty($select)) ? '*' : implode(',', $select);
-        $query=sprintf("SELECT %s FROM $moduleName WHERE ", $select);
+        $select = (empty($select)) ? '*' : implode(',', $select);
+        $query = sprintf("SELECT %s FROM $moduleName WHERE ", $select);
         foreach ($params as $param => $value) {
-            $criteria[] = "{$param} LIKE '{$value}'";
+            $criteria[ ] = "{$param} LIKE '{$value}'";
         }
 
-        $query.=implode(" AND ", $criteria);
+        $query .= implode(" AND ", $criteria);
         if (intval($limit) > 0) {
-            $query.=sprintf(" LIMIT %s", intval($limit));
+            $query .= sprintf(" LIMIT %s", intval($limit));
         }
         return $query;
     }

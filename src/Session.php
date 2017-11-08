@@ -99,7 +99,7 @@ class Session
         $postdata = [
             'operation' => 'login',
             'username'  => $username,
-            'accessKey' => md5($this->serviceToken . $accessKey)
+            'accessKey' => md5($this->serviceToken.$accessKey)
         ];
 
         $result = $this->sendHttpRequest($postdata);
@@ -112,12 +112,12 @@ class Session
         $this->accessKey = $accessKey;
 
         // Session data
-        $this->sessionName = $result['sessionName'];
-        $this->userID = $result['userId'];
+        $this->sessionName = $result[ 'sessionName' ];
+        $this->userID = $result[ 'userId' ];
 
         // Vtiger CRM and WebServices API version
-        $this->vtigerApiVersion = $result['version'];
-        $this->vtigerVersion = $result['vtigerVersion'];
+        $this->vtigerApiVersion = $result[ 'version' ];
+        $this->vtigerVersion = $result[ 'vtigerVersion' ];
 
         return true;
     }
@@ -149,8 +149,8 @@ class Session
         }
 
         $this->accessKey = array_key_exists('accesskey', $result)
-            ? $result['accesskey']
-            : $result[0];
+            ? $result[ 'accesskey' ]
+            : $result[ 0 ];
 
         return $this->login($username, $accessKey);
     }
@@ -169,12 +169,12 @@ class Session
         ];
         $result = $this->sendHttpRequest($getdata, 'GET');
         
-        if (!is_array($result) || !isset($result['token'])) {
+        if (!is_array($result) || !isset($result[ 'token' ])) {
             return false;
         }
 
-        $this->serviceExpireTime = $result['expireTime'];
-        $this->serviceToken = $result['token'];
+        $this->serviceExpireTime = $result[ 'expireTime' ];
+        $this->serviceToken = $result[ 'token' ];
 
         return true;
     }
@@ -222,30 +222,30 @@ class Session
      */
     public function sendHttpRequest(array $requestData, $method = 'POST')
     {
-        if (!isset($requestData['operation'])) {
+        if (!isset($requestData[ 'operation' ])) {
             throw new WSException('Request data must contain the name of the operation!');
         }
 
-        $requestData['sessionName'] = $this->sessionName;
+        $requestData[ 'sessionName' ] = $this->sessionName;
 
         // Perform re-login if required.
-        if ('getchallenge' !== $requestData['operation'] && time() > $this->serviceExpireTime) {
+        if ('getchallenge' !== $requestData[ 'operation' ] && time() > $this->serviceExpireTime) {
             $this->login($this->userName, $this->accessKey);
         }
         
         try {
             switch ($method) {
                 case 'GET':
-                    $response = $this->httpClient->get($this->serviceBaseURL, ['query' => $requestData]);
+                    $response = $this->httpClient->get($this->serviceBaseURL, [ 'query' => $requestData ]);
                     break;
                 case 'POST':
-                    $response = $this->httpClient->post($this->serviceBaseURL, ['form_params' => $requestData]);
+                    $response = $this->httpClient->post($this->serviceBaseURL, [ 'form_params' => $requestData ]);
                     break;
                 default:
                     throw new WSException("Unsupported request type {$method}");
             }
         } catch (RequestException $ex) {
-            $urlFailed = $this->httpClient->getConfig('base_uri') . $this->serviceBaseURL;
+            $urlFailed = $this->httpClient->getConfig('base_uri').$this->serviceBaseURL;
             throw new WSException(
                 sprintf('Failed to execute %s call on "%s" URL', $method, $urlFailed),
                 'FAILED_SENDING_REQUEST',
@@ -258,7 +258,7 @@ class Session
 
         return (!is_array($jsonObj) || self::checkForError($jsonObj))
             ? null
-            : $jsonObj['result'];
+            : $jsonObj[ 'result' ];
     }
 
     /**
@@ -266,6 +266,7 @@ class Session
      * @access private
      * @static
      * @param  string  Base URL of vTiger CRM
+     * @param string $baseUrl
      * @return boolean Returns cleaned and fixed vTiger URL
      */
     private static function fixVtigerBaseUrl($baseUrl)
@@ -273,7 +274,7 @@ class Session
         if (!preg_match('/^https?:\/\//i', $baseUrl)) {
             $baseUrl = sprintf('http://%s', $baseUrl);
         }
-        if (strripos($baseUrl, '/') !== strlen($baseUrl)-1) {
+        if (strripos($baseUrl, '/') !== strlen($baseUrl) - 1) {
             $baseUrl .= '/';
         }
         return $baseUrl;
@@ -288,15 +289,15 @@ class Session
      */
     private static function checkForError(array $jsonResult)
     {
-        if (isset($jsonResult['success']) && (bool)$jsonResult['success'] === true) {
+        if (isset($jsonResult[ 'success' ]) && (bool) $jsonResult[ 'success' ] === true) {
             return false;
         }
 
-        if (isset($jsonResult['error'])) {
-            $error = $jsonResult['error'];
+        if (isset($jsonResult[ 'error' ])) {
+            $error = $jsonResult[ 'error' ];
             throw new WSException(
-                $error['message'],
-                $error['code']
+                $error[ 'message' ],
+                $error[ 'code' ]
             );
         }
 

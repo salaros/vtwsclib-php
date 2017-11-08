@@ -59,12 +59,12 @@ class Modules
      */
     public function getAll()
     {
-        $result = $this->wsClient->invokeOperation('listtypes', [], 'GET');
-        $modules = $result['types'];
+        $result = $this->wsClient->invokeOperation('listtypes', [ ], 'GET');
+        $modules = $result[ 'types' ];
 
         $result = array();
         foreach ($modules as $moduleName) {
-            $result[$moduleName] = ['name' => $moduleName];
+            $result[ $moduleName ] = [ 'name' => $moduleName ];
         }
         return $result;
     }
@@ -89,7 +89,7 @@ class Modules
      */
     public function getTypedID($moduleName, $entityID)
     {
-        if (stripos((string)$entityID, 'x') !== false) {
+        if (stripos((string) $entityID, 'x') !== false) {
             return $entityID;
         }
 
@@ -103,6 +103,6 @@ class Modules
             throw new WSException($errorMessage);
         }
 
-        return "{$type['idPrefix']}x{$entityID}";
+        return "{$type[ 'idPrefix' ]}x{$entityID}";
     }
 }
