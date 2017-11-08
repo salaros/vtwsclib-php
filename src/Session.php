@@ -50,14 +50,14 @@ class Session
     protected $vtigerUrl = null;
     protected $wsBaseURL = null;
 
+    // Vtiger CRM and WebServices API version
+    private $vtigerApiVersion = '0.0';
+    private $vtigerVersion = '0.0';
+    
     // Webservice login validity
     # private $serviceServerTime = null;
     private $serviceExpireTime = null;
     private $serviceToken = null;
-
-    // Vtiger CRM and WebServices API version
-    private $apiVersion = false;
-    private $vtigerVersion = false;
 
     // Webservice user credentials
     private $userName = null;
@@ -117,7 +117,7 @@ class Session
         $this->userID = $result['userId'];
 
         // Vtiger CRM and WebServices API version
-        $this->apiVersion = $result['version'];
+        $this->vtigerApiVersion = $result['version'];
         $this->vtigerVersion = $result['vtigerVersion'];
 
         return true;
@@ -157,22 +157,10 @@ class Session
     }
 
     /**
-     * Checks and performs a login operation if requried and repeats login if needed
-     * @access private
-     */
-    public function checkLogin()
-    {
-        if (time() <= $this->serviceExpireTime) {
-            return;
-        }
-        $this->login($this->userName, $this->accessKey);
-    }
-
-    /**
      * Gets a challenge token from the server and stores for future requests
      * @access private
      * @param  string $username VTiger user name
-     * @return booleanReturns false in case of failure
+     * @return boolean Returns false in case of failure
      */
     private function passChallenge($username)
     {
@@ -191,6 +179,40 @@ class Session
         $this->serviceToken = $result['token'];
 
         return true;
+    }
+
+    /**
+     * Gets an array containing the basic information about current API user
+     * @access public
+     * @return array Basic information about current API user
+     */
+    public function getUserInfo()
+    {
+        return [
+            'id' => $this->userID,
+            'userName' => $this->userName,
+            'accessKey' => $this->accessKey,
+        ];
+    }
+
+    /**
+     * Gets vTiger version, retrieved on successful login
+     * @access public
+     * @return string vTiger version, retrieved on successful login
+     */
+    public function getVtigerVersion()
+    {
+        return $this->vtigerVersion;
+    }
+
+    /**
+     * Gets vTiger WebServices API version, retrieved on successful login
+     * @access public
+     * @return string vTiger WebServices API version, retrieved on successful login
+     */
+    public function getVtigerApiVersion()
+    {
+        return $this->vtigerApiVersion;
     }
 
     /**

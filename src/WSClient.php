@@ -132,6 +132,29 @@ class WSClient
 
         return $this->invokeOperation('query', [ 'query' => $query ], 'GET');
     }
+
+    /**
+     * Gets an array containing the basic information about current API user
+     * @access public
+     * @return array Basic information about current API user
+     */
+    public function getCurrentUser()
+    {
+        return $this->session->getUserInfo();
+    }
+
+    /**
+     * Gets an array containing the basic information about the connected vTiger instance
+     * @access public
+     * @return array Basic information about the connected vTiger instance
+     */
+    public function getVtigerInfo()
+    {
+        return [
+            'vtiger' => $this->session->getVtigerVersion(),
+            'api' => $this->session->getVtigerApiVersion(),
+        ];
+    }
 }
 
 if (!function_exists('is_assoc_array')) {
