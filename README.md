@@ -221,7 +221,7 @@ $params = [
     'someParam' => 'foobar',
     'dateParam' => strtotime('now'),
 ];
-$result = $client->invokeOperation('new_operation', $params, 'PUT');
+$result = $client->invokeOperation('new_operation', $params, 'POST');
 ```
 
 ## More useful resources
