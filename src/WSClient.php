@@ -100,10 +100,10 @@ class WSClient
      */
     public function invokeOperation($operation, array $params = null, $method = 'POST')
     {
-        if (empty($params) || !is_array($params) || !is_assoc_array($params)) {
+        if (!is_assoc_array($params)) {
             throw new WSException(
-                "You have to specified a list of operation parameters, 
-                but apparently it's not an associative array ('prop' => value), you must fix it!"
+                "You have to specified a list of operation parameters, but apparently 
+                it's not an associative array ('prop' => value)!"
             );
         }
 
@@ -166,6 +166,10 @@ if (!function_exists('is_assoc_array')) {
      */
     function is_assoc_array(array $array)
     {
+        if (empty($params) || !is_array($params)) {
+            return false;
+        }
+
         foreach (array_keys($array) as $key) {
             if (!is_int($key)) {
                 return true;

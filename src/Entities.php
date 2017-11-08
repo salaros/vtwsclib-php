@@ -118,8 +118,11 @@ class Entities
      */
     public function createOne($moduleName, array $params)
     {
-        if (!self::checkParams($params, 'be able to create an entity')) {
-            return false;
+        if (!is_assoc_array($params)) {
+            throw new WSException(
+                "You have to specify at least one search parameter (prop => value) 
+                in order to be able to create an entity"
+            );
         }
 
         // Assign record to logged in user if not specified
@@ -144,8 +147,11 @@ class Entities
      */
     public function updateOne($moduleName, $entityID, array $params)
     {
-        if (!self::checkParams($params, 'be able to update the entity(ies)')) {
-            return false;
+        if (!is_assoc_array($params)) {
+            throw new WSException(
+                "You have to specify at least one search parameter (prop => value) 
+                in order to be able to update the entity(ies)"
+            );
         }
 
         // Fail if no ID was supplied
@@ -200,8 +206,11 @@ class Entities
      */
     public function findMany($moduleName, array $params, array $select = [ ], $limit = 0)
     {
-        if (!self::checkParams($params, 'be able to retrieve entity(ies)')) {
-            return false;
+        if (!is_assoc_array($params)) {
+            throw new WSException(
+                "You have to specify at least one search parameter (prop => value) 
+                in order to be able to retrieve entity(ies)"
+            );
         }
 
         // Builds the query
@@ -237,25 +246,6 @@ class Entities
         }
 
         return $this->wsClient->invokeOperation('sync', $requestData, true);
-    }
-
-        /**
-         * Checks if if params holds valid entity data/search constraints, otherwise returns false
-         * @access public
-         * @static
-         * @param  array    $params  Array holding entity data/search constraints
-         * @param string $paramsPurpose
-         * @return boolean  Returns true if params holds valid entity data/search constraints, otherwise returns false
-         */
-    private static function checkParams(array $params, $paramsPurpose)
-    {
-        if (empty($params) || !is_array($params) || !is_assoc_array($params)) {
-            throw new WSException(sprintf(
-                "You have to specify at least one search parameter (prop => value) in order to %s",
-                $paramsPurpose
-            ));
-        }
-        return true;
     }
 
     /**
