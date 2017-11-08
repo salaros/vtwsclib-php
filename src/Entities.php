@@ -125,7 +125,8 @@ class Entities
 
         // Assign record to logged in user if not specified
         if (!isset($params['assigned_user_id'])) {
-            $params['assigned_user_id'] = $this->userID;
+            $currentUser = $this->wsClient->getCurrentUser();
+            $params['assigned_user_id'] = $currentUser['id'];
         }
 
         $requestData = [
