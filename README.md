@@ -34,15 +34,11 @@ require 'vendor/autoload.php';
 
 use Salaros\Vtiger\VTWSCLib\WSClient;
 
-$client = new WSClient('https://vtiger.mycompany.com/');
-$loginOk = $client->login('admin', '<accessKey>');
-if (!$loginOk) {
-    trigger_error('Failed to log into vTiger CRM');
-}
+$client = new WSClient('https://vtiger.mycompany.com/', 'admin', '<accessKey>');
 
 // Let's print out the information about Leads module,
 // including the list of required and optional fields etc
-print_r($client->getType('Leads'));
+print_r($client->modules->getOne('Leads'));
 
 // The output
 Array
@@ -81,14 +77,14 @@ Check if a lead record exists, by using the first and the last name as constrain
 
 ```php
 // Look for Ivan Petrov among Leads
-$ivanPetrovId = $client->entityRetrieveID('Leads', [
+$ivanPetrovId = $client->entities->getNumericID('Leads', [
     'firstname'         => 'Ivan',
     'lastname'          => 'Petrov',
 ]);
 
 // Add his record if it doesn't exist
 if (intval($ivanPetrovId) < 1) {
-    $ivanPetrov = $client->entityCreate('Leads', [
+    $ivanPetrov = $client->entities->createOne('Leads', [
         'salutationtype'    => 'Mr.',
         'firstname'         => 'Ivan',
         'lastname'          => 'Petrov',
@@ -133,7 +129,7 @@ Check if a contact record exists, by using the first and the last name as constr
 ```php
 // Look for John Smith in Contacts
 // and print out only some fields
-$johnSmith = $client->entityRetrieve('Contacts', [
+$johnSmith = $client->entities->findOne('Contacts', [
     'firstname'             => 'John',
     'lastname'              => 'Smith',
 ], [
@@ -170,7 +166,7 @@ There is another useful function provided by vTiger, it allows one to get the in
 // Fetch entities updated and/or deleted since
 // the midnight of the first day of this month
 $lastModTime = strtotime('first day of this month midnight');
-$leadsSyncInfo = $client->entitiesSync($lastModTime, 'Leads');
+$leadsSyncInfo = $client->entities->sync($lastModTime, 'Leads');
 if (!isset($leadsSyncInfo['updated'])) {
     // ... do something with updated entries
 }
