@@ -45,7 +45,10 @@ class WSException extends Exception implements IteratorAggregate
     protected $message;
     protected $code;
     
-    // Redefine the exception so message isn't optional
+    /**
+     * Redefine the exception so message isn't optional
+     * @access public
+     */
     public function __construct($message, $code = 'UNKNOWN', Exception $previous = null)
     {
         $this->message = $message;
@@ -55,7 +58,11 @@ class WSException extends Exception implements IteratorAggregate
         parent::__construct($this->message, 0, $previous);
     }
     
-    // custom string representation of object
+    /**
+     * Custom string representation of object
+     * @access public
+     * @return string A custom string representation of exception
+     */
     public function __toString()
     {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
@@ -63,10 +70,9 @@ class WSException extends Exception implements IteratorAggregate
     
     /**
     * Retrieve an external iterator
-    *
+    * @access public
     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-    * @return \Traversable
-    *  An instance of an object implementing \Traversable
+    * @return \Traversable An instance of an object implementing \Traversable
     */
     public function getIterator()
     {
@@ -77,9 +83,9 @@ class WSException extends Exception implements IteratorAggregate
     }
     
     /**
-    * Get all the properties of the object
-    *
-    * @return array
+    * Gets all the properties of the object
+    * @access public
+    * @return array Array of properties
     */
     private function getAllProperties()
     {
