@@ -55,7 +55,6 @@ class Session
     private $vtigerVersion = '0.0';
     
     // Webservice login validity
-    # private $serviceServerTime = null;
     private $serviceExpireTime = null;
     private $serviceToken = null;
 
@@ -174,7 +173,6 @@ class Session
             return false;
         }
 
-        # $this->serviceServerTime = $result['serverTime'];
         $this->serviceExpireTime = $result['expireTime'];
         $this->serviceToken = $result['token'];
 
