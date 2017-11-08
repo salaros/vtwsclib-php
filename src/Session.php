@@ -44,7 +44,7 @@ use GuzzleHttp\Exception\RequestException;
 class Session
 {
     // HTTP Client instance
-    protected $httpClient = null;
+    protected $httpClient;
 
     // Service URL to which client connects to
     protected $vtigerUrl = null;

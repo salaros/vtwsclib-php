@@ -41,7 +41,7 @@ use Salaros\Vtiger\VTWSCLib\WSClient;
 */
 class Modules
 {
-    private $wsClient = null;
+    private $wsClient;
 
     /**
      * Class constructor

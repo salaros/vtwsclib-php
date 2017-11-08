@@ -41,7 +41,7 @@ use Salaros\Vtiger\VTWSCLib\WSClient;
 */
 class Entities
 {
-    private $wsClient = null;
+    private $wsClient;
 
     /**
      * Class constructor
@@ -57,7 +57,7 @@ class Entities
      * @param  string  $moduleName The name of the module / entity type
      * @param  string  $entityID The ID of the entity to retrieve
      * @return array   $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
-     * @return boolean  Entity data
+     * @return array  Entity data
      */
     public function findOneByID($moduleName, $entityID, array $select = [ ])
     {
@@ -69,13 +69,13 @@ class Entities
      * @param  string  $moduleName   The name of the module / entity type
      * @param  array   $params  Data used to find a matching entry
      * @return array   $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
-     * @return integer  The matching record
+     * @return array  The matching record
      */
     public function findOne($moduleName, array $params, array $select = [ ])
     {
         $records = $this->findMany($moduleName, $params, $select, 1);
         if (false === $records || !isset($records[ 0 ])) {
-            return false;
+            return null;
         }
         return $records[ 0 ];
     }
@@ -84,13 +84,13 @@ class Entities
      * Retrieves the ID of the entity matching a list of constraints + prepends '<module_id>x' string to it
      * @param  string $moduleName   The name of the module / entity type
      * @param  array   $params  Data used to find a matching entry
-     * @return integer  Type ID (a numeric ID + '<module_id>x')
+     * @return string  Type ID (a numeric ID + '<module_id>x')
      */
     public function getID($moduleName, array $params)
     {
         $record = $this->findOne($moduleName, $params, [ 'id' ]);
         if (false === $record || !isset($record[ 'id' ]) || empty($record[ 'id' ])) {
-            return false;
+            return null;
         }
         return $record[ 'id' ];
     }
@@ -202,7 +202,7 @@ class Entities
      * @param  array    $params  Data used to find matching entries
      * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return integer      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
-     * @return bool|array  The array containing matching entries or false if nothing was found
+     * @return array  The array containing matching entries or false if nothing was found
      */
     public function findMany($moduleName, array $params, array $select = [ ], $limit = 0)
     {
@@ -219,7 +219,7 @@ class Entities
         // Run the query
         $records = $this->wsClient->runQuery($query);
         if (false === $records || !is_array($records) || (count($records) <= 0)) {
-            return false;
+            return null;
         }
 
         return $records;
