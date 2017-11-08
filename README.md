@@ -1,15 +1,19 @@
+[![vTiger versions](https://img.shields.io/badge/vTiger-5.x%20|%206.x%20|%207.x-green.svg)](https://wiki.vtiger.com/index.php/Webservices_tutorials)
 [![License](https://img.shields.io/packagist/l/salaros/vtwsclib-php.svg)](https://raw.githubusercontent.com/salaros/vtwsclib-php/master/LICENSE)
-[![vTiger versions](https://img.shields.io/badge/vTiger-5,%206,%207.x-green.svg)]()
-[![Packagist version](https://img.shields.io/github/tag/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
+[![Packagist version](https://img.shields.io/packagist/v/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 [![Packagist downloads](https://img.shields.io/packagist/dt/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
-[![Dependency Status](https://www.versioneye.com/user/projects/555af8f2634daacd41000171/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/555af8f2634daacd41000171)
+[![Monthly Downloads](https://img.shields.io/packagist/dm/doctrine/orm.svg)]()
+
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/badges/build.png?b=master)](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/build-status/master)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/f5764af3-0382-444c-ada6-3c2b0f8bf39b.svg)](https://insight.sensiolabs.com/projects/f5764af3-0382-444c-ada6-3c2b0f8bf39b)
+[![Dependency Status](https://www.versioneye.com/user/projects/555af8f2634daacd41000171/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/555af8f2634daacd41000171)
+[![composer.lock](https://poser.pugx.org/salaros/vtwsclib-php/composerlock)](https://packagist.org/packages/salaros/vtwsclib-php)
 
 vtwsclib-php
 ============
 
-A PHP client for vTiger's Web Services APIs. 
+A PHP client for [vTiger](https://www.vtiger.com/)'s [Web Services](https://wiki.vtiger.com/index.php/Webservices_tutorials) APIs. Works well vTiger **forks** such as [VTE CRM](http://vtecrm.com/en/).
 
 ## Installing via Composer
 
