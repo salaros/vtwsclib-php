@@ -107,7 +107,7 @@ class WSClient
             );
         }
 
-        $params['operation'] = $operation;
+        $params[ 'operation' ] = $operation;
         return $this->session->sendHttpRequest($params, $method);
     }
 
@@ -126,7 +126,7 @@ class WSClient
     public function runQuery($query)
     {
         // Make sure the query ends with ;
-        $query = (strripos($query, ';') != strlen($query)-1)
+        $query = (strripos($query, ';') != strlen($query) - 1)
             ? trim($query .= ';')
             : trim($query);
 
