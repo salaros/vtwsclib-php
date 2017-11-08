@@ -98,7 +98,7 @@ class Modules
         }
 
         $type = $this->getOne($moduleName);
-        if (!$type || !array_key_exists('idPrefix', $type)) {
+        if (!is_array($type) || !array_key_exists('idPrefix', $type)) {
             $errorMessage = sprintf("The following module is not installed: %s", $moduleName);
             throw new WSException($errorMessage);
         }

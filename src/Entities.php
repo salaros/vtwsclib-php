@@ -74,10 +74,9 @@ class Entities
     public function findOne($moduleName, array $params, array $select = [ ])
     {
         $records = $this->findMany($moduleName, $params, $select, 1);
-        if (false === $records || !isset($records[ 0 ])) {
-            return null;
-        }
-        return $records[ 0 ];
+        return (is_array($records) || isset($records[ 0 ]))
+            ? $records[ 0 ]
+            : null;
     }
 
     /**
@@ -89,7 +88,7 @@ class Entities
     public function getID($moduleName, array $params)
     {
         $record = $this->findOne($moduleName, $params, [ 'id' ]);
-        if (false === $record || !isset($record[ 'id' ]) || empty($record[ 'id' ])) {
+        if (!is_array($record) || !isset($record[ 'id' ]) || empty($record[ 'id' ])) {
             return null;
         }
         return $record[ 'id' ];
