@@ -84,9 +84,8 @@ class WSException extends Exception implements IteratorAggregate
     private function getAllProperties()
     {
         $allProperties = get_object_vars($this);
-        
         $properties = array();
-        while (list ($fullName, $value) = each($allProperties)) {
+        foreach ($allProperties as $fullName => $value) {
             $fullNameComponents = explode("\0", $fullName);
             $propertyName = array_pop($fullNameComponents);
             if ($propertyName && isset($value)) {
