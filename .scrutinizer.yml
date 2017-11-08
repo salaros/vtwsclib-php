@@ -80,9 +80,9 @@ tools:
   # Runs Scrutinizer's PHP Analyzer Tool
   php_analyzer:
     enabled:        true
+    extensions:
+      - php
     filter:
-      extensions:
-        - php
       excluded_paths:
         - 'tests/*'
         - 'vendor/*'
