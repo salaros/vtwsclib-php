@@ -166,7 +166,7 @@ if (!function_exists('is_assoc_array')) {
      */
     function is_assoc_array(array $array)
     {
-        if (empty($params) || !is_array($params)) {
+        if (empty($array) || !is_array($array)) {
             return false;
         }
 
