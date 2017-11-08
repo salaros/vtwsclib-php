@@ -107,7 +107,7 @@ class Entities
         $entityID = $this->getID($moduleName, $params);
         $entityIDParts = explode('x', $entityID, 2);
         return (is_array($entityIDParts) && count($entityIDParts) === 2)
-            ? $entityIDParts[1]
+            ? intval($entityIDParts[1])
             : -1;
     }
 
