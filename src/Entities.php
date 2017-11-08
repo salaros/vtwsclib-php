@@ -45,7 +45,7 @@ class Entities
 
     /**
      * Class constructor
-     * @param string $wsClient  Parent WSClient instance
+     * @param object $wsClient  Parent WSClient instance
      */
     public function __construct($wsClient)
     {

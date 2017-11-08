@@ -45,7 +45,7 @@ class Modules
 
     /**
      * Class constructor
-     * @param string $wsClient  Parent WSClient instance
+     * @param object $wsClient  Parent WSClient instance
      */
     public function __construct($wsClient)
     {
@@ -97,7 +97,7 @@ class Modules
             throw new WSException('Entity ID must be a valid number');
         }
 
-        $type = $this->getType($moduleName);
+        $type = $this->getOne($moduleName);
         if (!$type || !array_key_exists('idPrefix', $type)) {
             $errorMessage = sprintf("The following module is not installed: %s", $moduleName);
             throw new WSException($errorMessage);
