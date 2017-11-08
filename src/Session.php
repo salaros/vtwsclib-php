@@ -74,7 +74,7 @@ class Session
     public function __construct($vtigerUrl, $wsBaseURL = 'webservice.php')
     {
         $this->vtigerUrl = self::fixVtigerBaseUrl($vtigerUrl);
-        $this->serviceBaseURL = $wsBaseURL;
+        $this->wsBaseURL = $wsBaseURL;
 
         // Gets target URL for WebServices API requests
         $this->httpClient = new Client([
@@ -236,16 +236,16 @@ class Session
         try {
             switch ($method) {
                 case 'GET':
-                    $response = $this->httpClient->get($this->serviceBaseURL, [ 'query' => $requestData ]);
+                    $response = $this->httpClient->get($this->wsBaseURL, [ 'query' => $requestData ]);
                     break;
                 case 'POST':
-                    $response = $this->httpClient->post($this->serviceBaseURL, [ 'form_params' => $requestData ]);
+                    $response = $this->httpClient->post($this->wsBaseURL, [ 'form_params' => $requestData ]);
                     break;
                 default:
                     throw new WSException("Unsupported request type {$method}");
             }
         } catch (RequestException $ex) {
-            $urlFailed = $this->httpClient->getConfig('base_uri').$this->serviceBaseURL;
+            $urlFailed = $this->httpClient->getConfig('base_uri').$this->wsBaseURL;
             throw new WSException(
                 sprintf('Failed to execute %s call on "%s" URL', $method, $urlFailed),
                 'FAILED_SENDING_REQUEST',
