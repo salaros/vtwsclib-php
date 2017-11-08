@@ -42,17 +42,17 @@ use \IteratorAggregate;
 */
 class WSException extends Exception implements IteratorAggregate
 {
-    private $message;
-    private $code;
+    protected $message;
+    protected $code;
     
     // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 0, Exception $previous = null)
+    public function __construct($message, $code = 'UNKNOWN', Exception $previous = null)
     {
-        $this->errorMessage = $message;
-        $this->errorCode = $code;
+        $this->message = $message;
+        $this->code = $code;
         
         // make sure everything is assigned properly
-        parent::__construct($message, $code, $previous);
+        parent::__construct($this->message, 0, $previous);
     }
     
     // custom string representation of object
