@@ -74,7 +74,7 @@ class Entities
     public function findOne($moduleName, array $params, array $select = [ ])
     {
         $records = $this->findMany($moduleName, $params, $select, 1);
-        return (is_array($records) || isset($records[ 0 ]))
+        return (is_array($records) && isset($records[ 0 ]))
             ? $records[ 0 ]
             : null;
     }

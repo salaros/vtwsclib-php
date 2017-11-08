@@ -222,16 +222,12 @@ class Session
      */
     public function sendHttpRequest(array $requestData, $method = 'POST')
     {
-        if (!isset($requestData[ 'operation' ])) {
-            throw new WSException('Request data must contain the name of the operation!');
-        }
-
-        $requestData[ 'sessionName' ] = $this->sessionName;
-
         // Perform re-login if required.
         if ('getchallenge' !== $requestData[ 'operation' ] && time() > $this->serviceExpireTime) {
             $this->login($this->userName, $this->accessKey);
         }
+
+        $requestData[ 'sessionName' ] = $this->sessionName;
         
         try {
             switch ($method) {
@@ -256,9 +252,10 @@ class Session
         $jsonRaw = $response->getBody();
         $jsonObj = json_decode($jsonRaw, true);
 
-        return (!is_array($jsonObj) || self::checkForError($jsonObj))
-            ? null
-            : $jsonObj[ 'result' ];
+        $result = (is_array($jsonObj) && !self::checkForError($jsonObj))
+            ? $jsonObj[ 'result' ]
+            : null;
+        return $result;
     }
 
     /**
@@ -289,7 +286,7 @@ class Session
      */
     private static function checkForError(array $jsonResult)
     {
-        if (isset($jsonResult[ 'success' ]) && (bool) $jsonResult[ 'success' ] === true) {
+        if (isset($jsonResult[ 'success' ]) && true === (bool) $jsonResult[ 'success' ]) {
             return false;
         }
 
