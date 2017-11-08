@@ -103,7 +103,7 @@ class Session
         ];
 
         $result = $this->sendHttpRequest($postdata);
-        if (!$result || !is_array($result)) {
+        if (!is_array($result) || empty($result)) {
             return false;
         }
 
@@ -144,7 +144,7 @@ class Session
         ];
 
         $result = $this->sendHttpRequest($postdata);
-        if (!$result || !is_array($result) || count($result) !== 1) {
+        if (!is_array($result) || empty($result)) {
             return false;
         }
 
