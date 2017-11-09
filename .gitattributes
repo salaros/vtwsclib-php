@@ -12,4 +12,3 @@
 /.gitattributes     export-ignore
 /.gitignore         export-ignore
 /.scrutinizer.yml   export-ignore
-/build-docs.sh      export-ignore
