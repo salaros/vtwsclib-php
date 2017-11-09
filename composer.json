@@ -32,9 +32,11 @@
     },
     "scripts": {
         "docs": [
+            "@install-pip",
             "@install-pip-reqs",
             "cd ./docs && make html"
         ],
+        "install-pip": "! hash pip &> /dev/null && sudo apt install -qy pip",
         "install-pip-reqs": "pip install -r ./docs/pip-requirements.txt"
     }
 }
