@@ -228,3 +228,14 @@ $result = $client->invokeOperation('new_operation', $params, 'POST');
 
 * [vTiger Webservices Tutorials](https://wiki.vtiger.com/index.php/Webservices_tutorials)
 * [vtwsclib-1.4.pdf](http://code.vtiger.com/vtiger/vtigercrm-sdk/blob/8230a46668d007ad1f01d2a892f5378c57f328c6/vtwsclib/1.4/vtwsclib-1.4.pdf) from http://code.vtiger.com
+
+## Support
+This is a development reposiroty for `vtwsclib-php` and should _not_ be used for support.
+Please visit [StackOverflow's vtwsclib-php topic](https://stackoverflow.com/questions/tagged/vtwsclib-php) for any support request or click [here to ask a vtwsclib-php-related question](https://stackoverflow.com/questions/ask?tags=vtwsclib-php+vtiger+web-services+api+php).
+
+## Contributions
+Anyone is welcome to contribute to the development of this plugin. There are various ways to do so:
+
+1. Found a bug? Raise an [issue](https://github.com/salaros/vtwsclib-php/issues?direction=desc&labels=bug&page=1&sort=created&state=open) on GitHub.
+2. Send me a Pull Request with your bug fixes and/or new features.
+3. Provide feedback and suggestions on [enhancements](https://github.com/salaros/vtwsclib-php/issues?direction=desc&labels=enhancement&page=1&sort=created&state=open).
