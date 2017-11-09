@@ -2,8 +2,9 @@
 [![License](https://img.shields.io/packagist/l/salaros/vtwsclib-php.svg)](https://raw.githubusercontent.com/salaros/vtwsclib-php/master/LICENSE)
 [![Packagist version](https://img.shields.io/packagist/v/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 [![Packagist downloads](https://img.shields.io/packagist/dt/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
-[![Monthly Downloads](https://img.shields.io/packagist/dm/salaros/vtwsclib-php.svg)]()
+[![Monthly Downloads](https://img.shields.io/packagist/dm/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 
+[![Documentation Status](https://readthedocs.org/projects/vtwsclib-php/badge/?version=latest)](http://vtwsclib-php.readthedocs.io/en/latest/?badge=latest)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/badges/build.png?b=master)](https://scrutinizer-ci.com/g/salaros/vtwsclib-php/build-status/master)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/f5764af3-0382-444c-ada6-3c2b0f8bf39b.svg)](https://insight.sensiolabs.com/projects/f5764af3-0382-444c-ada6-3c2b0f8bf39b)
