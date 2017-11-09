@@ -44,6 +44,10 @@ $client = new WSClient('https://vtiger.mycompany.com/', 'admin', '<accessKey>');
 
 Here you can find more **[detailed examples](https://github.com/salaros/vtwsclib-php/wiki)** on how to use **vtwsclib-php**.
 
+## Official documentation
+
+The official documentation can be found [here](http://vtwsclib-php.readthedocs.io/en/latest/WSClient.html).
+
 ## Support
 This is a development reposiroty for `vtwsclib-php` and should _not_ be used for support.
 Please visit [StackOverflow's vtwsclib-php topic](https://stackoverflow.com/questions/tagged/vtwsclib-php) for any support request or click [here to ask a vtwsclib-php-related question](https://stackoverflow.com/questions/ask?tags=vtwsclib-php+vtiger+web-services+api+php).
