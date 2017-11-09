@@ -29,5 +29,12 @@
         "psr-4": {
             "Salaros\\Vtiger\\VTWSCLib\\": "src/"
         }
+    },
+    "scripts": {
+        "docs": [
+            "@install-pip-reqs",
+            "cd ./docs && make html"
+        ],
+        "install-pip-reqs": "pip install -r ./docs/pip-requirements.txt"
     }
 }
