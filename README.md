@@ -41,7 +41,7 @@ use Salaros\Vtiger\VTWSCLib\WSClient;
 $client = new WSClient('https://vtiger.mycompany.com/', 'admin', '<accessKey>');
 ```
 
-Here you can find more **[detailed examples](/salaros/vtwsclib-php/wiki)** on how to use **vtwsclib-php**.
+Here you can find more **[detailed examples](https://github.com/salaros/vtwsclib-php/wiki)** on how to use **vtwsclib-php**.
 
 ## Support
 This is a development reposiroty for `vtwsclib-php` and should _not_ be used for support.
