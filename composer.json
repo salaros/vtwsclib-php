@@ -1,27 +1,26 @@
 {
-    "name":         "salaros/vtwsclib-php",
-    "license":      "MIT",
-    "description":  "Vtiger Web Services PHP Client Library",
-    "homepage":     "https://github.com/salaros/vtwsclib-php",
-    "type":         "library",
+    "name"              : "salaros/vtwsclib-php",
+    "license"           : "MIT",
+    "description"       : "Vtiger Web Services PHP Client Library",
+    "homepage"          : "https://github.com/salaros/vtwsclib-php",
+    "type"              : "library",
     "keywords": [
         "vtwsclib",
         "webservices",
         "vtiger",
         "api client"
     ],
-
     "authors": [
         {
-            "name": "Zhmayev Yaroslav",
-            "email": "salaros@salaros.com",
-            "homepage": "http://salaros.com",
-            "role": "Developer"
+            "name"      : "Zhmayev Yaroslav",
+            "email"     : "salaros@salaros.com",
+            "homepage"  : "http://salaros.com",
+            "role"      : "Developer"
         }
     ],
     "require": {
-        "php": ">=5.5",
-        "guzzlehttp/guzzle": "~6.0"
+        "php"               : ">=5.5",
+        "guzzlehttp/guzzle" : "~6.0"
     },
     "autoload": {
         "psr-4": {
