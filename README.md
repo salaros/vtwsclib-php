@@ -31,7 +31,7 @@ The recommended way to install **vtwsclib-php** is through [Composer](https://ge
 
 ## How to use
 
-Here are some examples of how to use vtwsclib-php:
+Here are some [examples](https://github.com/salaros/vtwsclib-php/wiki) of how to use vtwsclib-php:
 
 ```php
 <?php
