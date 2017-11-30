@@ -1,5 +1,6 @@
 [![vTiger versions](https://img.shields.io/badge/vTiger-5.x%20|%206.x%20|%207.x-green.svg)](https://wiki.vtiger.com/index.php/Webservices_tutorials)
 [![License](https://img.shields.io/packagist/l/salaros/vtwsclib-php.svg)](https://raw.githubusercontent.com/salaros/vtwsclib-php/master/LICENSE)
+[![GitHub top language](https://img.shields.io/github/languages/top/salaros/vtwsclib-php.svg)](https://github.com/salaros/vtwsclib-php/search?l=php)
 [![Packagist version](https://img.shields.io/packagist/v/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 [![Packagist downloads](https://img.shields.io/packagist/dt/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
 [![Monthly Downloads](https://img.shields.io/packagist/dm/salaros/vtwsclib-php.svg)](https://packagist.org/packages/salaros/vtwsclib-php)
