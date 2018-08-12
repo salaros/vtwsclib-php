@@ -61,7 +61,14 @@ class Entities
      */
     public function findOneByID($moduleName, $entityID, array $select = [ ])
     {
-        return $this->findOne($moduleName, [ 'id' => $entityID ], $select);
+        $entityID = $this->wsClient->modules->getTypedID($moduleName, $entityID);
+        $record = $this->wsClient->invokeOperation('retrieve', ['id' => $entityID], 'GET');
+        if (!is_array($record))
+            return null;
+
+        return (empty($select))
+            ? $record
+            : array_intersect_key($record, array_flip($select));
     }
 
     /**
@@ -73,10 +80,10 @@ class Entities
      */
     public function findOne($moduleName, array $params, array $select = [ ])
     {
-        $records = $this->findMany($moduleName, $params, $select, 1);
-        return (is_array($records) && isset($records[ 0 ]))
-            ? $records[ 0 ]
-            : null;
+        $entityID = $this->getID($moduleName, $params);
+        return (empty($entityID))
+            ? null
+            : $this->findOneByID($moduleName, $entityID, $select);
     }
 
     /**
@@ -87,11 +94,16 @@ class Entities
      */
     public function getID($moduleName, array $params)
     {
-        $record = $this->findOne($moduleName, $params, [ 'id' ]);
-        if (!is_array($record) || !isset($record[ 'id' ]) || empty($record[ 'id' ])) {
+        $query = self::getQueryString($moduleName, $params, [ 'id' ], 1);
+        $records = $this->wsClient->runQuery($query);
+        if (false === $records || !is_array($records) || empty($records)) {
             return null;
         }
-        return $record[ 'id' ];
+
+        $record = $records[0];
+        return (!is_array($record) || !isset($record[ 'id' ]) || empty($record[ 'id' ]))
+            ? null
+            : $record[ 'id' ];
     }
 
     /**
@@ -217,7 +229,7 @@ class Entities
 
         // Run the query
         $records = $this->wsClient->runQuery($query);
-        if (false === $records || !is_array($records) || (count($records) <= 0)) {
+        if (false === $records || !is_array($records) || empty($records)) {
             return null;
         }
 
