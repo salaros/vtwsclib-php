@@ -36,7 +36,7 @@
             "@install-pip-reqs",
             "cd ./docs && make html"
         ],
-        "install-pip": "! hash pip &> /dev/null && sudo apt install -qy pip",
+        "install-pip": "! hash pip &> /dev/null && sudo apt install -qy python-pip",
         "install-pip-reqs": "pip install -r ./docs/pip-requirements.txt"
     }
 }
