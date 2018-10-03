@@ -217,7 +217,7 @@ class Entities
      */
     public function findMany($moduleName, array $params, array $select = [ ], $limit = 0)
     {
-        if (!is_assoc_array($params)) {
+        if (!is_array($params) || (!empty($params) && !is_assoc_array($params))) {
             throw new WSException(
                 "You have to specify at least one search parameter (prop => value) 
                 in order to be able to retrieve entity(ies)"
@@ -273,15 +273,21 @@ class Entities
     {
         $criteria = array();
         $select = (empty($select)) ? '*' : implode(',', $select);
-        $query = sprintf("SELECT %s FROM $moduleName WHERE ", $select);
-        foreach ($params as $param => $value) {
-            $criteria[ ] = "{$param} LIKE '{$value}'";
+        $query = sprintf("SELECT %s FROM $moduleName", $select);
+        
+        if (!empty($params)) {
+
+            foreach ($params as $param => $value) {
+                $criteria[ ] = "{$param} LIKE '{$value}'";
+            }
+
+            $query .= sprintf(' WHERE %s', implode(" AND ", $criteria));
         }
 
-        $query .= implode(" AND ", $criteria);
         if (intval($limit) > 0) {
             $query .= sprintf(" LIMIT %s", intval($limit));
         }
+
         return $query;
     }
 }
