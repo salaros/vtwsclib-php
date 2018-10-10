@@ -20,6 +20,12 @@ vtwsclib-php
 
 A PHP client for [vTiger](https://www.vtiger.com/)'s [Web Services](https://wiki.vtiger.com/index.php/Webservices_tutorials) APIs. Works well vTiger **forks** such as [VTE CRM](http://vtecrm.com/en/).
 
+## 🟊🟊🟊 Support this project 🟊🟊🟊
+
+You can support us in a small way, please consider starring and sharing this repo! It helps us getting known and grow the community.
+
+![star us](.github/assets/star_us.gif)
+
 ## Installing via Composer
 
 The recommended way to install **vtwsclib-php** is through [Composer](https://getcomposer.org/download/).
