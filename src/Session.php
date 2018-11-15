@@ -46,6 +46,9 @@ class Session
     // HTTP Client instance
     protected $httpClient;
 
+    // request timeout in seconds
+    protected $requestTimeout;
+
     // Service URL to which client connects to
     protected $vtigerUrl = null;
     protected $wsBaseURL = null;
@@ -70,11 +73,13 @@ class Session
      * Class constructor
      * @param string $vtigerUrl  The URL of the remote WebServices server
      * @param string [$wsBaseURL = 'webservice.php']  WebServices base URL appended to vTiger root URL
+     * @param int $requestTimeout Number of seconds after which request times out
      */
-    public function __construct($vtigerUrl, $wsBaseURL = 'webservice.php')
+    public function __construct($vtigerUrl, $wsBaseURL = 'webservice.php', $requestTimeout = 0)
     {
         $this->vtigerUrl = self::fixVtigerBaseUrl($vtigerUrl);
         $this->wsBaseURL = $wsBaseURL;
+        $this->requestTimeout = $requestTimeout;
 
         // Gets target URL for WebServices API requests
         $this->httpClient = new Client([
@@ -232,10 +237,10 @@ class Session
         try {
             switch ($method) {
                 case 'GET':
-                    $response = $this->httpClient->get($this->wsBaseURL, [ 'query' => $requestData ]);
+                    $response = $this->httpClient->get($this->wsBaseURL, [ 'query' => $requestData, 'timeout' => $this->requestTimeout ]);
                     break;
                 case 'POST':
-                    $response = $this->httpClient->post($this->wsBaseURL, [ 'form_params' => $requestData ]);
+                    $response = $this->httpClient->post($this->wsBaseURL, [ 'form_params' => $requestData, 'timeout' => $this->requestTimeout ]);
                     break;
                 default:
                     throw new WSException("Unsupported request type {$method}");
