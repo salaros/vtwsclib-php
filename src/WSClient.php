@@ -60,12 +60,13 @@ class WSClient
      * @param  string $secret  Access key token (shown on user's profile page) or password, depends on $loginMode
      * @param  integer [$loginMode = self::USE_ACCESSKEY|USE_PASSWORD]  Login mode, defaults to username + accessKey
      * @param string [$wsBaseURL = 'webservice.php']  WebServices base URL appended to vTiger root URL
+     * @param int Optional request timeout in seconds
      */
-    public function __construct($vtigerUrl, $username, $secret, $loginMode = self::USE_ACCESSKEY, $wsBaseURL = 'webservice.php')
+    public function __construct($vtigerUrl, $username, $secret, $loginMode = self::USE_ACCESSKEY, $wsBaseURL = 'webservice.php', $requestTimeout = 0)
     {
         $this->modules = new Modules($this);
         $this->entities = new Entities($this);
-        $this->session = new Session($vtigerUrl, $wsBaseURL);
+        $this->session = new Session($vtigerUrl, $wsBaseURL, $requestTimeout);
 
         $loginOK = false;
         switch ($loginMode) {
