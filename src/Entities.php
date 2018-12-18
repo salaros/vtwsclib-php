@@ -256,7 +256,7 @@ class Entities
             $requestData[ 'elementType' ] = $moduleName;
         }
 
-        return $this->wsClient->invokeOperation('sync', $requestData, true);
+        return $this->wsClient->invokeOperation('sync', $requestData, 'GET');
     }
 
     /**
