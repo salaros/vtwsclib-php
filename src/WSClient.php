@@ -79,7 +79,7 @@ class WSClient
                 break;
             
             default:
-                throw new WSException(sprinf('Unknown login mode: %s', $loginMode));
+                throw new WSException(sprintf('Unknown login mode: %s', $loginMode));
         }
 
         if (!$loginOK) {
