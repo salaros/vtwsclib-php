@@ -240,9 +240,10 @@ class Entities
      * Sync will return a sync result object containing details of changes after modifiedTime
      * @param  integer [$modifiedTime = null]    The date of the first change
      * @param  string [$moduleName = null]   The name of the module / entity type
+     * @param  string [$syncType = null]   Sync type determines the scope of the query
      * @return array  Sync result object
      */
-    public function sync($modifiedTime = null, $moduleName = null)
+    public function sync($modifiedTime = null, $moduleName = null, $syncType = null)
     {
         $modifiedTime = (empty($modifiedTime))
             ? strtotime('today midnight')
@@ -256,7 +257,11 @@ class Entities
             $requestData[ 'elementType' ] = $moduleName;
         }
 
-        return $this->wsClient->invokeOperation('sync', $requestData, true);
+        if ($syncType) {
+            $requestData[ 'syncType' ] = $syncType;
+        }
+
+        return $this->wsClient->invokeOperation('sync', $requestData, 'GET');
     }
 
     /**
