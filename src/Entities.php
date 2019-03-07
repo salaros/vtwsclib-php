@@ -213,9 +213,10 @@ class Entities
      * @param  array    $params  Data used to find matching entries
      * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return integer      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return integer    $count  limit query will be 'LIMIT m, n' m representing offset, n representing count
      * @return array  The array containing matching entries or false if nothing was found
      */
-    public function findMany($moduleName, array $params, array $select = [ ], $limit = 0)
+    public function findMany($moduleName, array $params, array $select = [ ], $limit = 0, $count = null)
     {
         if (!is_array($params) || (!empty($params) && !is_assoc_array($params))) {
             throw new WSException(
@@ -225,7 +226,7 @@ class Entities
         }
 
         // Builds the query
-        $query = self::getQueryString($moduleName, $params, $select, $limit);
+        $query = self::getQueryString($moduleName, $params, $select, $limit, $count);
 
         // Run the query
         $records = $this->wsClient->runQuery($query);
@@ -272,16 +273,17 @@ class Entities
      * @param  array    $params  Data used to find matching entries
      * @return string    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
      * @return string      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return integer    $count  limit query will be 'LIMIT m, n' m representing offset, n representing count
      * @return string   The query build out of the supplied parameters
      */
-    public static function getQueryString($moduleName, array $params, array $select = [ ], $limit = 0)
+    public static function getQueryString($moduleName, array $params, array $select = [ ], $limit = 0, $count = null)
     {
         $criteria = array();
         $select = (empty($select)) ? '*' : implode(',', $select);
         $query = sprintf("SELECT %s FROM $moduleName", $select);
         
         if (!empty($params)) {
-
+                        
             foreach ($params as $param => $value) {
                 $criteria[ ] = "{$param} LIKE '{$value}'";
             }
@@ -289,8 +291,12 @@ class Entities
             $query .= sprintf(' WHERE %s', implode(" AND ", $criteria));
         }
 
-        if (intval($limit) > 0) {
+        if (intval($limit) > 0 && is_null($count)) {
             $query .= sprintf(" LIMIT %s", intval($limit));
+        }
+
+        if (intval($limit) > 0 && !is_null($count) && intval($count) > 0) {
+            $query .= sprintf(" LIMIT %s, %s", intval($limit), intval($count));
         }
 
         return $query;
