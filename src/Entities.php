@@ -62,7 +62,7 @@ class Entities
     public function findOneByID($moduleName, $entityID, array $select = [ ])
     {
         $entityID = $this->wsClient->modules->getTypedID($moduleName, $entityID);
-        $record = $this->wsClient->invokeOperation('retrieve', ['id' => $entityID], 'GET');
+        $record = $this->wsClient->invokeOperation('retrieve', [ 'id' => $entityID ], 'GET');
         if (!is_array($record))
             return null;
 
@@ -100,7 +100,7 @@ class Entities
             return null;
         }
 
-        $record = $records[0];
+        $record = $records[ 0 ];
         return (!is_array($record) || !isset($record[ 'id' ]) || empty($record[ 'id' ]))
             ? null
             : $record[ 'id' ];
