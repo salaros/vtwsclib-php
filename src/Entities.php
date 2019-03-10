@@ -212,10 +212,11 @@ class Entities
      * @param  string   $moduleName  The name of the module / entity type
      * @param  array    $params  Data used to find matching entries
      * @return array    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
-     * @return integer      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return integer  $limit   Limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return integer  $offset  Integer values to specify the offset of the query
      * @return array  The array containing matching entries or false if nothing was found
      */
-    public function findMany($moduleName, array $params, array $select = [ ], $limit = 0)
+    public function findMany($moduleName, array $params, array $select = [ ], $limit = 0, $offset = 0)
     {
         if (!is_array($params) || (!empty($params) && !is_assoc_array($params))) {
             throw new WSException(
@@ -225,7 +226,7 @@ class Entities
         }
 
         // Builds the query
-        $query = self::getQueryString($moduleName, $params, $select, $limit);
+        $query = self::getQueryString($moduleName, $params, $select, $limit, $offset);
 
         // Run the query
         $records = $this->wsClient->runQuery($query);
@@ -270,18 +271,18 @@ class Entities
      * @static
      * @param  string   $moduleName  The name of the module / entity type
      * @param  array    $params  Data used to find matching entries
-     * @return string    $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
-     * @return string      $limit  limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return string   $select  The list of fields to select (defaults to SQL-like '*' - all the fields)
+     * @return integer  $limit   Limit the list of entries to N records (acts like LIMIT in SQL)
+     * @return integer  $offset  Integer values to specify the offset of the query
      * @return string   The query build out of the supplied parameters
      */
-    public static function getQueryString($moduleName, array $params, array $select = [ ], $limit = 0)
+    public static function getQueryString($moduleName, array $params, array $select = [ ], $limit = 0, $offset = 0)
     {
         $criteria = array();
         $select = (empty($select)) ? '*' : implode(',', $select);
         $query = sprintf("SELECT %s FROM $moduleName", $select);
         
         if (!empty($params)) {
-
             foreach ($params as $param => $value) {
                 $criteria[ ] = "{$param} LIKE '{$value}'";
             }
@@ -290,7 +291,9 @@ class Entities
         }
 
         if (intval($limit) > 0) {
-            $query .= sprintf(" LIMIT %s", intval($limit));
+            $query .= (intval($offset) > 0)
+                ? sprintf(" LIMIT %s, %s", intval($offset), intval($limit))
+                : sprintf(" LIMIT %s", intval($limit));
         }
 
         return $query;
