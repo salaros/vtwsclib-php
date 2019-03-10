@@ -63,8 +63,9 @@ class Entities
     {
         $entityID = $this->wsClient->modules->getTypedID($moduleName, $entityID);
         $record = $this->wsClient->invokeOperation('retrieve', [ 'id' => $entityID ], 'GET');
-        if (!is_array($record))
+        if (!is_array($record)) {
             return null;
+        }
 
         return (empty($select))
             ? $record
