@@ -1,3 +1,5 @@
 composer.phar
 vendor/
 docs/_*
+
+composer.lock
